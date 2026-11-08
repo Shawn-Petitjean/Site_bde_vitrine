@@ -1,0 +1,98 @@
+{
+  "events": [
+    {
+      "id": "evt-1794175668566",
+      "day": "12",
+      "month": "NOV",
+      "category": "party",
+      "badge1": "ALCOOL / FETE",
+      "badge2": "",
+      "title": "Arena Soirée",
+      "description": "soirée a l'arena avec la pinte a 6euro",
+      "location": "Arena bar",
+      "time": "20:00",
+      "price": "Gratuit",
+      "slots": "Illimité",
+      "ctaText": "RÉSERVER MA PLACE →",
+      "theme": "purple",
+      "registrations": []
+    }
+  ],
+  "crew": [
+    {
+      "id": "crew-1",
+      "login": "shapetit",
+      "name": "SARAH \"KERNEL\" M.",
+      "role": "PRÉSIDENTE // LVL.99",
+      "quote": "Si c'est pas scriptable, ça existe pas.",
+      "stack": "Go, Kubernetes, Arch",
+      "avatarUrl": "",
+      "avatarType": "bot",
+      "theme": "purple"
+    },
+    {
+      "id": "crew-2",
+      "login": "",
+      "name": "ALEXANDRE D.",
+      "role": "TRÉSORIER // LVL.84",
+      "quote": "Chaque centime va dans les bières.",
+      "stack": "Excel, Rust, Solidity",
+      "avatarUrl": "",
+      "avatarType": "vault",
+      "theme": "red"
+    },
+    {
+      "id": "crew-3",
+      "login": "",
+      "name": "INÈS \"BEAT\" B.",
+      "role": "RESP. SOIRÉES // LVL.92",
+      "quote": "Pas de sommeil avant d'avoir pushé la track.",
+      "stack": "Ableton, React, TS",
+      "avatarUrl": "",
+      "avatarType": "dj",
+      "theme": "yellow"
+    },
+    {
+      "id": "crew-4",
+      "login": "",
+      "name": "HUGO \"DEBUG\" V.",
+      "role": "LEAD TECH // LVL.95",
+      "quote": "404 : Le mot 'impossible' n'a pas été trouvé.",
+      "stack": "C++, Kernel, Neovim",
+      "avatarUrl": "",
+      "avatarType": "hex",
+      "theme": "black"
+    }
+  ],
+  "eventLogs": [],
+  "ideas": [
+    {
+      "id": "idea-1",
+      "title": "Machine à café illimitée",
+      "category": "CAMPUS",
+      "description": "Remplacer la machine par un broyeur professionnel en accès libre.",
+      "votes": 143,
+      "voters": [
+        "shapetit"
+      ],
+      "authorLogin": "kernel",
+      "authorName": "BDE Seed",
+      "createdAt": "2026-11-08T18:00:00.000Z",
+      "theme": "cream"
+    },
+    {
+      "id": "idea-2",
+      "title": "Cluster Kubernetes dédié",
+      "category": "TECH",
+      "description": "Mettre à disposition un serveur bare-metal pour les APIs.",
+      "votes": 99,
+      "voters": [
+        "shapetit"
+      ],
+      "authorLogin": "debug",
+      "authorName": "BDE Seed",
+      "createdAt": "2026-11-08T18:05:00.000Z",
+      "theme": "red"
+    }
+  ]
+}

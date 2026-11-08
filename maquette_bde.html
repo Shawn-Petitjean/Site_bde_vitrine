@@ -1,0 +1,2378 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BDE // ROOT_OVERFLOW - École de Code</title>
+  
+  <!-- Polices Google requises : Syne, Space Grotesk, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;600;700;800&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bde-yellow': '#e1b70a',
+            'bde-purple': '#2e006c',
+            'bde-red': '#C60800',
+            'bde-black': '#000000',
+            'bde-cream': '#FFF1B8',
+          },
+          fontFamily: {
+            syne: ['Syne', 'sans-serif'],
+            space: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          boxShadow: {
+            'neo-yellow': '5px 5px 0px 0px #e1b70a',
+            'neo-red': '5px 5px 0px 0px #C60800',
+            'neo-cream': '5px 5px 0px 0px #FFF1B8',
+            'neo-purple': '5px 5px 0px 0px #2e006c',
+            'neo-black': '5px 5px 0px 0px #000000',
+            'neo-yellow-lg': '8px 8px 0px 0px #e1b70a',
+            'neo-red-lg': '8px 8px 0px 0px #C60800',
+            'neo-cream-lg': '8px 8px 0px 0px #FFF1B8',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #000000;
+      color: #FFF1B8;
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .film-grain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.28;
+      mix-blend-mode: overlay;
+    }
+
+    .hero-stage {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .hero-aurora-gradient {
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(
+        circle at 50% 45%,
+        rgba(0, 90, 255, 0.55) 0%,
+        rgba(0, 80, 255, 0.6) 18%,
+        rgba(85, 20, 190, 0.7) 36%,
+        rgba(90, 10, 150, 0.5) 52%,
+        rgba(50, 5, 100, 0.25) 66%,
+        transparent 80%
+      );
+      z-index: 1;
+      filter: blur(40px);
+    }
+
+    .ground-grid-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 72%;
+      perspective: 450px;
+      perspective-origin: 50% 0%;
+      overflow: hidden;
+      z-index: 2;
+      mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.9) 30%, black 100%);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.9) 30%, black 100%);
+    }
+
+    .ground-grid-mesh {
+      position: absolute;
+      width: 250%;
+      height: 250%;
+      left: -75%;
+      top: 0;
+      transform: rotateX(76deg);
+      transform-origin: 50% 0%;
+      background-size: 60px 60px;
+      background-image: 
+        linear-gradient(to right, rgba(225, 183, 10, 0.3) 1.2px, transparent 1.2px),
+        linear-gradient(to bottom, rgba(225, 183, 10, 0.3) 1.2px, transparent 1.2px);
+      animation: groundScroll 8s linear infinite;
+    }
+
+    @keyframes groundScroll {
+      0% { transform: rotateX(76deg) translateY(0); }
+      100% { transform: rotateX(76deg) translateY(60px); }
+    }
+
+    .deco {
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+    .deco-float { animation: decoFloat 7s ease-in-out infinite; }
+    @keyframes decoFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(4deg); }
+    }
+    .deco-spin { animation: decoSpin 40s linear infinite; }
+    @keyframes decoSpin { to { transform: rotate(360deg); } }
+
+    .hazard-stripes {
+      background: repeating-linear-gradient(
+        -45deg,
+        #e1b70a,
+        #e1b70a 12px,
+        #000000 12px,
+        #000000 24px
+      );
+    }
+
+    .btn-neo {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .btn-neo:hover {
+      transform: translate(-3px, -3px);
+    }
+    .btn-neo:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px currentColor !important;
+    }
+
+    .card-neo {
+      border: 3.5px solid #000000;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-neo:hover {
+      transform: translate(-4px, -4px);
+    }
+
+    @keyframes marqueeAnimation {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      animation: marqueeAnimation 22s linear infinite;
+    }
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    .crew-slider {
+      scrollbar-width: thin;
+      scrollbar-color: #e1b70a #000000;
+    }
+    .crew-slider::-webkit-scrollbar {
+      height: 8px;
+    }
+    .crew-slider::-webkit-scrollbar-track {
+      background: #000000;
+      border: 2px solid #000000;
+    }
+    .crew-slider::-webkit-scrollbar-thumb {
+      background: #e1b70a;
+      border: 1px solid #000000;
+    }
+  </style>
+</head>
+<body class="selection:bg-bde-yellow selection:text-black">
+
+  <svg class="film-grain" xmlns="http://www.w3.org/2000/svg">
+    <filter id="grain-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
+      <feColorMatrix type="saturate" values="0" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#grain-filter)" />
+  </svg>
+
+  <div class="h-3 w-full hazard-stripes border-b-2 border-black"></div>
+
+  <!-- TICKER -->
+  <div class="bg-bde-yellow text-bde-black border-b-[3.5px] border-black font-mono font-bold text-xs md:text-sm uppercase tracking-wider overflow-hidden py-1.5 select-none">
+    <div class="marquee-track flex items-center gap-8">
+      <div class="flex items-center gap-8">
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-bde-red rounded-full animate-ping border border-black"></span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+        <span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+        <span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+      </div>
+      <div class="flex items-center gap-8" aria-hidden="true">
+        <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 bg-bde-red rounded-full animate-ping border border-black"></span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+        <span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+        <span>METTRE INFO BDE ICI</span>
+        <span>+++</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <header class="sticky top-0 z-50 bg-[#150033]/95 backdrop-blur-md border-b-[3.5px] border-bde-yellow px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+
+      <!-- Left: Logo + Live Status -->
+      <div class="flex items-center gap-4 shrink-0">
+        <a href="#" class="flex items-center group" aria-label="BDE ROOT_OVERFLOW">
+          <img src="logo_bde.svg" alt="Logo BDE ROOT_OVERFLOW" class="h-11 sm:h-12 w-auto group-hover:scale-105 transition-transform" style="aspect-ratio: 873 / 484;">
+        </a>
+        <div class="hidden xl:flex items-center gap-2 pl-4 border-l-2 border-bde-cream/20">
+          <div class="bg-black border-2 border-bde-cream/40 px-2.5 py-1 text-[11px] font-mono flex items-center gap-2 shadow-neo-black">
+            <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+            <span class="text-bde-cream font-bold tracking-wider">Sandwicherie : CLOSE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Navigation Links -->
+      <nav class="hidden md:flex items-center gap-6 lg:gap-7 font-space font-bold uppercase text-xs lg:text-sm tracking-wide">
+        <a href="#piliers" class="text-bde-cream hover:text-bde-yellow transition-colors flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-bde-yellow font-mono text-xs">&gt;</span> Piliers
+        </a>
+        <a href="#events" class="text-bde-cream hover:text-bde-yellow transition-colors flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-bde-yellow font-mono text-xs">&gt;</span> Agenda
+        </a>
+        <a href="#equipe" class="text-bde-cream hover:text-bde-yellow transition-colors flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-bde-yellow font-mono text-xs">&gt;</span> L'Équipe
+        </a>
+        <a href="#feedback" class="text-bde-cream hover:text-bde-yellow transition-colors flex items-center gap-1.5 whitespace-nowrap">
+          <span class="text-bde-yellow font-mono text-xs">&gt;</span> PRs &amp; Idées
+        </a>
+      </nav>
+
+      <!-- Right: Service & Action Buttons -->
+      <div class="hidden sm:flex items-center gap-3 shrink-0">
+        <a href="#sandwicherie" title="Accéder au service Sandwicherie" class="btn-neo bg-bde-cream text-black hover:bg-bde-yellow font-mono font-extrabold text-xs uppercase px-3.5 py-2 border-[2.5px] border-black shadow-neo-red flex items-center gap-2 whitespace-nowrap">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 11h18a1 1 0 0 1 1 1v.5a4.5 4.5 0 0 1-4.5 4.5H6.5A4.5 4.5 0 0 1 2 12.5V12a1 1 0 0 1 1-1Z"/>
+            <path d="M4 11V9a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v2"/>
+            <path d="M2 15h20"/>
+            <path d="M4 17v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/>
+          </svg>
+          <span>SANDWICHERIE</span>
+          <span class="text-[10px] bg-bde-red text-bde-cream px-1 py-0.2 border border-black leading-tight">↗</span>
+        </a>
+
+        <!-- 42 OAuth Login / Connected Profile -->
+        <div id="auth-container" class="flex items-center">
+          <button id="login-42-btn" type="button" class="btn-neo bg-black text-bde-cream hover:bg-bde-red font-mono font-extrabold text-xs uppercase px-3.5 py-2 border-[2.5px] border-black shadow-neo-yellow flex items-center gap-2 whitespace-nowrap">
+            <span class="bg-bde-yellow text-black px-1.5 py-0.5 font-black text-[10px] border border-black leading-none">42</span>
+            <span>CONNEXION</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobile-toggle" aria-label="Menu" class="md:hidden w-10 h-10 bg-bde-yellow text-black border-2 border-black flex items-center justify-center font-bold shadow-neo-red">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section id="hero-section" class="w-full bg-black relative pt-14 pb-24 md:pt-20 md:pb-32 px-4 overflow-hidden">
+    <div class="hero-stage">
+      <div class="hero-aurora-gradient"></div>
+      <div class="ground-grid-container">
+        <div class="ground-grid-mesh"></div>
+      </div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#150033] z-[3]"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto z-20">
+      
+      <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+          <span class="inline-flex items-center gap-2 bg-bde-red text-bde-cream font-mono font-bold text-xs uppercase px-3 py-1 border-[2.5px] border-black shadow-neo-yellow">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            SYSTEM ONLINE // BDE 2026-2027
+          </span>
+          <span class="bg-bde-purple text-bde-cream font-mono font-black text-xs uppercase tracking-widest px-3 py-1 border-[2.5px] border-black shadow-neo-red">
+            [ VIE ÉTUDIANTE ]
+          </span>
+          <span class="hidden sm:inline-flex bg-bde-yellow text-black font-mono font-black text-xs uppercase px-3 py-1 border-[2.5px] border-black shadow-neo-cream">
+            ● PERPIGNAN CAMPUS
+          </span>
+        </div>
+
+        <h1 class="font-syne font-black text-4xl sm:text-6xl xl:text-7xl uppercase leading-[0.98] tracking-tight text-bde-cream mb-6 drop-shadow-md">
+          SUDO FIESTA.<br>
+          <span class="bg-bde-yellow text-black px-3 py-0.5 border-[3px] border-black inline-block my-2 transform -rotate-1 shadow-neo-red">
+            FAIRE VIVRE LE CAMPUS.
+          </span><br>
+          GIT MERGE LA COMMU.
+        </h1>
+
+        <p class="font-space text-lg sm:text-xl text-bde-cream/90 max-w-2xl mx-auto mb-8 leading-relaxed font-semibold">
+          Le Bureau des Élèves : Sandwicherie sur place, tournois gaming, server Minecraft, soirée à théme et WEI.
+        </p>
+
+        <div class="grid grid-cols-3 gap-3 w-full max-w-md mx-auto mb-12">
+          <div class="bg-bde-purple p-3 border-[2.5px] border-black shadow-neo-yellow text-center">
+            <div class="font-syne font-black text-2xl lg:text-3xl text-bde-yellow">100%</div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-bde-cream">FAIT MAISON (SANDWICHERIE)</div>
+          </div>
+          <div class="bg-bde-red p-3 border-[2.5px] border-black shadow-neo-red text-center">
+            <div class="font-syne font-black text-2xl lg:text-3xl text-bde-cream">150+</div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-bde-yellow">Étudiants Actifs</div>
+          </div>
+          <div class="bg-bde-cream p-3 border-[2.5px] border-black shadow-neo-cream text-center">
+            <div class="font-syne font-black text-2xl lg:text-3xl text-black">∞</div>
+            <div class="font-mono text-[11px] uppercase tracking-wider text-black font-bold">Cafés Écoulés</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Terminal Shell -->
+      <div class="max-w-4xl mx-auto w-full" id="terminal">
+        <div class="bg-black border-[3.5px] border-black shadow-neo-yellow-lg overflow-hidden">
+          
+          <div class="bg-bde-cream px-4 py-2.5 border-b-[3px] border-black flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded-full bg-bde-red border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-bde-yellow border border-black inline-block"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-green-500 border border-black inline-block"></span>
+              <span class="font-mono text-xs text-black font-bold ml-2">bash - padmelagoat@bde_perpi</span>
+            </div>
+            <span class="font-mono text-[10px] bg-bde-yellow text-black px-1.5 py-0.5 font-bold border border-black">ZSH_42</span>
+          </div>
+
+          <div class="p-4 font-mono text-xs md:text-sm text-bde-cream flex flex-col gap-2 min-h-[300px] max-h-[360px] overflow-y-auto bg-black text-left" id="terminal-body">
+            <p class="text-bde-yellow font-bold">// BIENVENUE SUR LE MAINFRAME BDE 42 PERPIGNAN v2.6</p>
+            <p class="text-bde-cream">Tapez <span class="text-bde-red font-bold">help</span> pour lister les commandes disponibles.</p>
+            <div class="text-bde-cream/50 text-xs">------------------------------------------------</div>
+            <div id="terminal-history" class="space-y-2"></div>
+            
+            <form id="terminal-form" class="flex items-center gap-2 mt-auto pt-2 border-t border-bde-cream/30">
+              <span class="text-bde-yellow font-bold">padmelagoat@bde_perpi:~$</span>
+              <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" class="flex-1 bg-transparent text-bde-cream focus:outline-none font-mono text-xs md:text-sm" placeholder="Tapez 'help', 'events', 'bureau'...">
+              <button type="submit" class="bg-bde-yellow text-black px-2 py-0.5 text-xs font-bold border border-black hover:bg-white">EXEC</button>
+            </form>
+          </div>
+
+          <div class="bg-bde-yellow text-black px-4 py-1.5 border-t-[3px] border-black flex items-center justify-between font-mono text-[11px] font-bold">
+            <span>ENCRYPT: SHA-256 // LOCAL: S404</span>
+            <svg class="h-4 w-28 text-black" viewBox="0 0 100 20" fill="currentColor">
+              <rect x="0" y="0" width="3" height="20" /><rect x="5" y="0" width="1" height="20" /><rect x="8" y="0" width="4" height="20" /><rect x="15" y="0" width="2" height="20" /><rect x="20" y="0" width="6" height="20" /><rect x="28" y="0" width="2" height="20" /><rect x="33" y="0" width="5" height="20" /><rect x="40" y="0" width="1" height="20" /><rect x="44" y="0" width="4" height="20" /><rect x="52" y="0" width="3" height="20" /><rect x="58" y="0" width="6" height="20" /><rect x="67" y="0" width="2" height="20" /><rect x="72" y="0" width="5" height="20" /><rect x="80" y="0" width="1" height="20" /><rect x="84" y="0" width="7" height="20" /><rect x="94" y="0" width="3" height="20" />
+            </svg>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SECTION 1: 4 PILIERS (Fond VIOLET) ================= -->
+  <section id="piliers" class="w-full bg-gradient-to-b from-[#150033] to-[#100028] py-20 border-b-[4px] border-black relative overflow-hidden">
+    <img src="assets/dots_y.png" alt="" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-4">
+      <div class="mb-14 text-bde-cream">
+          <div class="flex items-center gap-2 font-mono uppercase text-xs tracking-widest mb-2 font-bold text-bde-yellow">
+            <span>// PROTOCOLE_FONDATEUR</span>
+            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+          </div>
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
+            LES 4 PILIERS DU BUREAU<img src="assets/star8_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
+          </h2>
+        <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
+          Pas de fausses promesses. 4 missions concrètes faites pour améliorer la vie étudiante et votre année.
+        </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="card-neo bg-bde-yellow text-black p-6 flex flex-col justify-between shadow-neo-cream relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-black text-bde-cream flex items-center justify-center font-mono font-black text-sm border-2 border-black rotate-12">
+            #01
+          </div>
+          <div>
+            <svg class="w-12 h-12 text-black mb-6 group-hover:rotate-45 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+              <polygon points="50 0, 60 38, 98 50, 60 62, 50 100, 40 62, 2 50, 40 38" />
+            </svg>
+            <span class="bg-bde-red text-bde-cream font-mono text-xs font-bold px-2.5 py-1 uppercase border border-black inline-block mb-3">SANTÉ MENTALE</span>
+            <h3 class="font-syne font-black text-2xl uppercase mb-3 leading-tight">SOLIDARITÉ BIEN-ÊTRE </h3>
+            <p class="font-space font-semibold text-sm leading-relaxed mb-6">
+              Une fois par mois une permanence d'écoute en holodeck (tea time).
+            </p>
+          </div>
+          <div class="border-t-2 border-black pt-4 font-mono text-xs font-bold flex justify-between items-center text-black">
+            <span>FREQUENCE : 1X / MOIS</span><span>&gt;&gt;&gt;</span>
+          </div>
+        </div>
+
+        <div class="card-neo bg-bde-cream text-black p-6 flex flex-col justify-between shadow-neo-yellow relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-bde-red text-bde-cream flex items-center justify-center font-mono font-black text-sm border-2 border-black rotate-12">
+            #02
+          </div>
+          <div>
+            <svg class="w-12 h-12 text-black mb-6 group-hover:scale-110 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+              <circle cx="50" cy="50" r="24" />
+              <ellipse cx="50" cy="50" rx="46" ry="14" fill="none" stroke="currentColor" stroke-width="5" transform="rotate(-20 50 50)" />
+            </svg>
+            <span class="bg-bde-purple text-bde-cream font-mono text-xs font-bold px-2.5 py-1 uppercase border border-black inline-block mb-3">SOIRÉES ÉTUDIANTE</span>
+            <h3 class="font-syne font-black text-2xl uppercase mb-3 leading-tight">SOIRÉES À THÉME</h3>
+            <p class="font-space font-medium text-sm leading-relaxed mb-6 font-bold text-black/80">
+              Des soirées prevues toute l'année pour sociabiliser et decompresser.
+            </p>
+          </div>
+          <div class="border-t-2 border-black pt-4 font-mono text-xs font-bold flex justify-between items-center text-bde-purple">
+            <span>YA COOL DANS ALCOOL</span><span>&gt;&gt;&gt;</span>
+          </div>
+        </div>
+
+        <div class="card-neo bg-bde-red text-bde-cream p-6 flex flex-col justify-between shadow-neo-cream relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-bde-yellow text-black flex items-center justify-center font-mono font-black text-sm border-2 border-black rotate-12">
+            #03
+          </div>
+          <div>
+            <svg class="w-12 h-12 text-bde-cream mb-6 group-hover:rotate-90 transition-transform duration-500" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5">
+              <circle cx="50" cy="50" r="40" /><line x1="10" y1="50" x2="90" y2="50" /><ellipse cx="50" cy="50" rx="20" ry="40" />
+            </svg>
+            <span class="bg-black text-bde-cream font-mono text-xs font-bold px-2.5 py-1 uppercase border border-black inline-block mb-3">ARENA COMPETITIVE</span>
+            <h3 class="font-syne font-black text-2xl uppercase mb-3 leading-tight text-bde-cream">E-SPORT & LAN</h3>
+            <p class="font-space font-medium text-sm text-bde-cream/95 leading-relaxed mb-6">
+              Retranscription de matchs en holodeck et mise en place de tournois durant l'année.
+            </p>
+          </div>
+          <div class="border-t-2 border-black pt-4 font-mono text-xs font-bold flex justify-between items-center text-black">
+            <span>PADME MIAULMENT ANY%</span><span>&gt;&gt;&gt;</span>
+          </div>
+        </div>
+
+        <div class="card-neo bg-black text-bde-cream p-6 flex flex-col justify-between shadow-neo-yellow relative overflow-hidden group">
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-bde-yellow text-black flex items-center justify-center font-mono font-black text-sm border-2 border-black rotate-12">
+            #04
+          </div>
+          <div>
+            <svg class="w-12 h-12 text-bde-yellow mb-6 group-hover:-translate-y-1 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+              <path d="M40 10 C40 5 46 5 46 10 L46 45 L50 45 L50 15 C50 10 56 10 56 15 L56 45 L60 45 L60 22 C60 17 66 17 66 22 L66 45 L70 45 L70 32 C70 27 76 27 76 32 L76 65 C76 85 65 95 48 95 C30 95 24 82 24 68 L24 45 C24 40 30 40 30 45 L30 55 L40 55 Z" />
+            </svg>
+            <span class="bg-bde-cream text-black font-mono text-xs font-bold px-2.5 py-1 uppercase border border-black inline-block mb-3">TUTORAT & SOLIDARITÉ</span>
+            <h3 class="font-syne font-black text-2xl uppercase mb-3 leading-tight">ENTRAIDE & SERVICES</h3>
+            <p class="font-space font-semibold text-sm leading-relaxed mb-6 text-bde-cream/80">
+              Négociation de tarifs étudiant et mise en place de snacking a petit prix.
+            </p>
+          </div>
+          <div class="border-t-2 border-bde-cream/40 pt-4 font-mono text-xs font-bold flex justify-between items-center text-bde-yellow">
+            <span>ACCÈS PERMANENT</span><span>&gt;&gt;&gt;</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: ÉVÉNEMENTS (Fond ROUGE) ================= -->
+  <section id="events" class="w-full bg-[#FFF1B8] py-20 border-b-[4px] border-black relative overflow-hidden">
+    <img src="assets/target_p.png" alt="" class="deco hidden lg:block w-24 top-2 -left-8 opacity-10">
+        <div class="relative z-10 max-w-7xl mx-auto px-4">
+      
+      <div class="mb-12 text-black">
+          <div class="flex items-center gap-2 font-mono text-bde-purple uppercase text-xs tracking-widest mb-2 font-bold">
+            <span>// CALENDRIER_TEMPS_RÉEL</span>
+            <img src="assets/chevrons_p.png" alt="" class="h-3 w-auto">
+          </div>
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+          <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
+            ÉVÉNEMENTS À VENIR<img src="assets/sparkles_p.png" alt="" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
+          </h2>
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs uppercase" id="event-filters">
+          <button data-filter="all" class="filter-btn active bg-bde-yellow text-black font-bold px-4 py-2 border-2 border-black shadow-neo-black">
+            TOUS [4]
+          </button>
+          <button data-filter="tech" class="filter-btn bg-black text-bde-cream font-bold px-4 py-2 border-2 border-black hover:bg-bde-yellow hover:text-black hover:border-black transition-colors">
+            HACK & TECH [2]
+          </button>
+          <button data-filter="party" class="filter-btn bg-black text-bde-cream font-bold px-4 py-2 border-2 border-black hover:bg-bde-yellow hover:text-black hover:border-black transition-colors">
+            SOIRÉES [1]
+          </button>
+          <button data-filter="gaming" class="filter-btn bg-black text-bde-cream font-bold px-4 py-2 border-2 border-black hover:bg-bde-yellow hover:text-black hover:border-black transition-colors">
+            GAMING [1]
+          </button>
+          <button id="add-event-btn" type="button" class="hidden btn-neo bg-bde-red text-bde-cream font-black px-4 py-2 border-2 border-black shadow-neo-black flex items-center gap-1.5">
+            <span>+ AJOUTER ÉVÉNEMENT</span>
+          </button>
+          <button id="view-event-logs-btn" type="button" class="hidden btn-neo bg-bde-purple text-bde-cream font-black px-4 py-2 border-2 border-black shadow-neo-yellow flex items-center gap-1.5">
+            <span>📋 LOGS INSCRIPTIONS</span>
+          </button>
+        </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="events-grid">
+        
+        <div class="event-card card-neo bg-bde-yellow border-2 border-black p-6 shadow-neo-black flex flex-col justify-between" data-category="tech">
+          <div>
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="bg-black text-bde-cream font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
+                <span class="text-2xl block">12</span><span class="text-xs uppercase">NOV</span>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end">
+                <span class="bg-bde-purple text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">TECH / DEV</span>
+                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black animate-pulse">PLACES LIMITÉES</span>
+              </div>
+            </div>
+            <h3 class="font-syne font-black text-2xl uppercase text-black mb-2">HACKATHON : PROMPT ENGINE 48H</h3>
+            <p class="font-space text-black/80 font-bold text-sm mb-6">
+              Développez des agents autonomes et des applications IA sans dormir. RedBull à volonté et jury d'experts.
+            </p>
+            <div class="space-y-2 font-mono text-xs mb-6 text-black bg-white/40 p-3 border border-black/30 font-bold">
+              <div class="flex justify-between"><span>📍 LIEU : Grand Amphi Tech</span><span>⏰ 20:00 - DIM 20:00</span></div>
+              <div class="flex justify-between"><span>🎟️ TARIF : Gratuit</span><span class="text-bde-purple">PLACES : 68 / 80</span></div>
+            </div>
+          </div>
+          <button class="btn-neo w-full bg-black text-bde-yellow font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-cream text-center">
+            RÉSERVER MA PLACE →
+          </button>
+        </div>
+
+        <div class="event-card card-neo bg-bde-cream border-2 border-black p-6 shadow-neo-black flex flex-col justify-between" data-category="party">
+          <div>
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="bg-bde-red text-bde-cream font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
+                <span class="text-2xl block">21</span><span class="text-xs uppercase">NOV</span>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end">
+                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">SOIRÉE OFFICIELLE</span>
+                <span class="bg-bde-purple text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">SHOTS INCLUS</span>
+              </div>
+            </div>
+            <h3 class="font-syne font-black text-2xl uppercase text-black mb-2">SOIRÉE SUDO_NIGHT : WAREHOUSE</h3>
+            <p class="font-space text-black/80 font-bold text-sm mb-6">
+              Privatisation d'un hangar de 1000m² avec soundsystem Funktion-One. Line-up de 5 DJs étudiants, lasers.
+            </p>
+            <div class="space-y-2 font-mono text-xs mb-6 text-black bg-white/50 p-3 border border-black/30 font-bold">
+              <div class="flex justify-between"><span>📍 LIEU : Club Le RedRoom</span><span>⏰ 23:00 - 05:30</span></div>
+              <div class="flex justify-between"><span>🎟️ TARIF : 8€ / 14€ Ext</span><span class="text-bde-red">PLACES : 280 / 350</span></div>
+            </div>
+          </div>
+          <button class="btn-neo w-full bg-bde-purple text-bde-cream font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-yellow text-center">
+            PRENDRE MON BILLET →
+          </button>
+        </div>
+
+        <div class="event-card card-neo bg-bde-purple border-2 border-black p-6 shadow-neo-yellow flex flex-col justify-between" data-category="gaming">
+          <div>
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="bg-bde-yellow text-black font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
+                <span class="text-2xl block">05</span><span class="text-xs uppercase">DÉC</span>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end">
+                <span class="bg-bde-cream text-black font-mono text-xs px-2.5 py-1 font-bold border border-black">E-SPORT ARENA</span>
+              </div>
+            </div>
+            <h3 class="font-syne font-black text-2xl uppercase text-bde-cream mb-2">TOURNOI SMASH BROS ULTIMATE & CS2</h3>
+            <p class="font-space text-bde-cream/90 text-sm mb-6 font-semibold">
+              Tournoi officiel homologué. Écrans 240Hz, setup streaming avec casters live et cashprize de 800€.
+            </p>
+            <div class="space-y-2 font-mono text-xs mb-6 text-bde-cream bg-black/20 p-3 border border-black/30">
+              <div class="flex justify-between"><span>📍 LIEU : Salle Réseau S102</span><span>⏰ 14:00 - 22:00</span></div>
+              <div class="flex justify-between"><span>🎟️ TARIF : 2€ d'inscription</span><span class="text-bde-yellow font-bold">SLOTS : 32 / 64</span></div>
+            </div>
+          </div>
+          <button class="btn-neo w-full bg-bde-yellow text-black font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-cream text-center">
+            INSCRIRE MON ÉQUIPE →
+          </button>
+        </div>
+
+        <div class="event-card card-neo bg-black border-2 border-black p-6 shadow-neo-cream flex flex-col justify-between" data-category="tech">
+          <div>
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="bg-bde-cream text-black font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
+                <span class="text-2xl block">14</span><span class="text-xs uppercase">DÉC</span>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end">
+                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">WORKSHOP</span>
+              </div>
+            </div>
+            <h3 class="font-syne font-black text-2xl uppercase text-bde-cream mb-2">WORKSHOP : RUST, KERNEL & EXPLOIT</h3>
+            <p class="font-space text-bde-cream/80 text-sm mb-6">
+              Atelier intensif animé par des alumni de chez Datadog et Ledger. Conception de drivers.
+            </p>
+            <div class="space-y-2 font-mono text-xs mb-6 text-bde-cream bg-white/10 p-3 border border-bde-cream/30">
+              <div class="flex justify-between"><span>📍 LIEU : Salle Lab Linux</span><span>⏰ 18:30 - 21:30</span></div>
+              <div class="flex justify-between"><span>🎟️ TARIF : Ouvert à tous</span><span class="text-bde-yellow font-bold">PLACES : 40 / 45</span></div>
+            </div>
+          </div>
+          <button class="btn-neo w-full bg-bde-cream text-black font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-purple text-center">
+            RÉSERVER MA PLACE →
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 3: L'ÉQUIPE (Fond CRÈME) ================= -->
+  <section id="equipe" class="w-full bg-gradient-to-b from-[#100028] to-[#0b1d6b] py-20 relative overflow-hidden">
+    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:30px;right:33.2%;width:20px;opacity:0.78">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:30px;right:20.3%;width:14px;opacity:0.78">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:13px;right:30.9%;width:20px;opacity:0.85">
+    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:42px;right:24.1%;width:14px;opacity:0.74">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:8px;right:18.1%;width:14px;opacity:0.87">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:7px;right:21.4%;width:12px;opacity:0.87">
+    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:40px;right:37.4%;width:20px;opacity:0.75">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:88px;right:28.6%;width:14px;opacity:0.56">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:86px;right:2.5%;width:12px;opacity:0.57">
+    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:50px;right:3.3%;width:14px;opacity:0.71">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:85px;right:3.1%;width:20px;opacity:0.57">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:112px;right:17.9%;width:8px;opacity:0.47">
+    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:125px;right:10.4%;width:10px;opacity:0.42">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:215px;right:2.2%;width:8px;opacity:0.25">
+    <img src="assets/sunset_y.png" alt="" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-4">
+      
+      <div class="mb-14 text-bde-cream">
+          <div class="flex items-center gap-2 font-mono text-bde-yellow uppercase text-xs tracking-widest mb-2 font-bold">
+            <span>// CREW_MANIFEST</span>
+            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+          </div>
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+          <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
+            LE BUREAU <span class="whitespace-nowrap">ROOT_OVERFLOW<img src="assets/saturn_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
+          </h2>
+          <div class="flex flex-col items-start md:items-end gap-3">
+            <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
+              Une équipe d'étudiants déterminés à rendre votre vie sur le campus aussi productive que mémorable.
+            </p>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="add-crew-btn" type="button" class="hidden btn-neo bg-bde-yellow text-black font-mono font-black text-xs uppercase px-4 py-2 border-2 border-black shadow-neo-red flex items-center gap-1.5">
+                <span>+ AJOUTER MEMBRE BDE</span>
+              </button>
+              <div id="crew-slider-controls" class="flex items-center gap-2">
+                <button id="crew-prev-btn" type="button" aria-label="Membre précédent" class="btn-neo bg-black text-bde-cream hover:bg-bde-yellow hover:text-black font-mono font-black text-sm px-3 py-1.5 border-2 border-black shadow-neo-yellow disabled:opacity-40 disabled:pointer-events-none">
+                  ←
+                </button>
+                <span id="crew-count-badge" class="bg-bde-purple text-bde-cream font-mono font-bold text-xs px-2.5 py-1.5 border-2 border-black shadow-neo-black">
+                  4 MEMBRES
+                </span>
+                <button id="crew-next-btn" type="button" aria-label="Membre suivant" class="btn-neo bg-bde-yellow text-black hover:bg-bde-cream font-mono font-black text-sm px-3 py-1.5 border-2 border-black shadow-neo-red disabled:opacity-40 disabled:pointer-events-none">
+                  →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="crew-grid" class="crew-slider flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pt-2 pb-5 px-1 -mx-1">
+        
+        <div class="card-neo bg-bde-purple border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-bde-cream">
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-bde-yellow text-black font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">PRÉSIDENTE // LVL.99</span>
+            </div>
+            <div class="h-44 bg-black border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
+              <svg class="w-24 h-24 text-bde-yellow group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+                <rect x="25" y="20" width="50" height="40" rx="4" /><rect x="35" y="65" width="30" height="25" /><rect x="15" y="30" width="8" height="20" /><rect x="77" y="30" width="8" height="20" /><circle cx="40" cy="38" r="5" fill="#e1b70a" /><circle cx="60" cy="38" r="5" fill="#e1b70a" /><rect x="38" y="48" width="24" height="4" fill="#e1b70a" />
+              </svg>
+            </div>
+            <h3 class="font-syne font-black text-xl uppercase mb-1">SARAH "KERNEL" M.</h3>
+            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"Si c'est pas scriptable, ça existe pas."</p>
+            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
+              <div class="flex justify-between"><span>STACK:</span> <span>Go, Kubernetes, Arch</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-neo bg-bde-red border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-bde-cream">
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-black text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">TRÉSORIER // LVL.84</span>
+            </div>
+            <div class="h-44 bg-black border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
+              <svg class="w-24 h-24 text-bde-yellow group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+                <polygon points="50,15 80,45 80,85 20,85 20,45" /><circle cx="50" cy="50" r="12" fill="#e1b70a" /><line x1="30" y1="35" x2="70" y2="35" stroke="#e1b70a" stroke-width="4" />
+              </svg>
+            </div>
+            <h3 class="font-syne font-black text-xl uppercase mb-1">ALEXANDRE D.</h3>
+            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"Chaque centime va dans les bières."</p>
+            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
+              <div class="flex justify-between"><span>STACK:</span> <span>Excel, Rust, Solidity</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-neo bg-bde-yellow border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-black">
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-bde-purple text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">RESP. SOIRÉES // LVL.92</span>
+            </div>
+            <div class="h-44 bg-bde-cream border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
+              <svg class="w-24 h-24 text-bde-purple group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+                <circle cx="50" cy="40" r="22" /><path d="M20 90 C20 65 35 60 50 60 C65 60 80 65 80 90 Z" /><rect x="35" y="32" width="30" height="8" fill="#2e006c" />
+              </svg>
+            </div>
+            <h3 class="font-syne font-black text-xl uppercase mb-1">INÈS "BEAT" B.</h3>
+            <p class="font-mono text-xs text-bde-purple mb-3 font-bold">"Pas de sommeil avant d'avoir pushé la track."</p>
+            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-black/20 pt-3">
+              <div class="flex justify-between"><span>STACK:</span> <span>Ableton, React, TS</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-neo bg-black border-[3px] border-black p-5 shadow-neo-purple flex flex-col justify-between text-bde-cream">
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <span class="bg-bde-red text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">LEAD TECH // LVL.95</span>
+            </div>
+            <div class="h-44 bg-bde-yellow border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
+              <svg class="w-24 h-24 text-black group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
+                <polygon points="50,10 90,30 90,75 50,95 10,75 10,30" /><circle cx="50" cy="50" r="18" fill="#e1b70a" /><polygon points="50,40 60,55 40,55" fill="#000" />
+              </svg>
+            </div>
+            <h3 class="font-syne font-black text-xl uppercase mb-1">HUGO "DEBUG" V.</h3>
+            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"404 : Le mot 'impossible' n'a pas été trouvé."</p>
+            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
+              <div class="flex justify-between"><span>STACK:</span> <span>C++, Kernel, Neovim</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 4: BOÎTE À IDÉES (Fond VIOLET) ================= -->
+  <section id="feedback" class="w-full bg-gradient-to-b from-[#0b1d6b] to-[#150033] py-20 border-b-[4px] border-black relative overflow-hidden">
+    <img src="assets/star8_y.png" alt="" class="deco" style="top:31px;right:25.6%;width:20px;opacity:0.78">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="top:37px;right:37.8%;width:12px;opacity:0.76">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:18px;right:13.3%;width:14px;opacity:0.83">
+    <img src="assets/star8_y.png" alt="" class="deco" style="top:34px;right:12.4%;width:12px;opacity:0.77">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="top:38px;right:29.6%;width:20px;opacity:0.75">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:8px;right:32.5%;width:20px;opacity:0.87">
+    <img src="assets/star8_y.png" alt="" class="deco" style="top:6px;right:36.5%;width:12px;opacity:0.88">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="top:60px;right:9.5%;width:12px;opacity:0.67">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:77px;right:15.5%;width:20px;opacity:0.6">
+    <img src="assets/star8_y.png" alt="" class="deco" style="top:73px;right:4.6%;width:14px;opacity:0.62">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="top:90px;right:11.7%;width:12px;opacity:0.55">
+    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:111px;right:14.0%;width:10px;opacity:0.47">
+    <img src="assets/star8_y.png" alt="" class="deco" style="top:140px;right:35.2%;width:8px;opacity:0.36">
+    <img src="assets/diamond_y.png" alt="" class="deco" style="top:183px;right:27.5%;width:8px;opacity:0.25">
+    <img src="assets/diamond_c.png" alt="" class="deco hidden lg:block w-28 top-8 -left-4 opacity-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-4">
+      
+      <div class="mb-12 text-bde-cream">
+          <div class="flex items-center gap-2 font-mono uppercase text-xs tracking-widest mb-2 font-bold text-bde-yellow">
+            <span>// OPEN_GOVERNANCE</span>
+            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+          </div>
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+          <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
+            BOÎTE À IDÉES & <span class="whitespace-nowrap">PR<img src="assets/target_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
+          </h2>
+          <div class="flex flex-col items-start lg:items-end gap-3">
+            <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
+              Votez pour les projets du campus ou proposez votre initiative étudiante.
+            </p>
+            <div id="ideas-slider-controls" class="flex items-center gap-2">
+              <button id="ideas-prev-btn" type="button" aria-label="Idées précédentes" class="btn-neo bg-black text-bde-cream hover:bg-bde-yellow hover:text-black font-mono font-black text-sm px-3 py-1.5 border-2 border-black shadow-neo-yellow disabled:opacity-40 disabled:pointer-events-none">
+                ←
+              </button>
+              <span id="ideas-count-badge" class="bg-bde-purple text-bde-cream font-mono font-bold text-xs px-2.5 py-1.5 border-2 border-black shadow-neo-black">
+                3 PRs // PAGE 1/1
+              </span>
+              <button id="ideas-next-btn" type="button" aria-label="Idées suivantes" class="btn-neo bg-bde-yellow text-black hover:bg-bde-cream font-mono font-black text-sm px-3 py-1.5 border-2 border-black shadow-neo-red disabled:opacity-40 disabled:pointer-events-none">
+                →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <div class="lg:col-span-5 card-neo bg-bde-yellow border-[3px] border-black p-6 shadow-neo-red-lg text-black">
+          <div class="flex items-center gap-2 mb-4 border-b-2 border-black/30 pb-3">
+            <span class="w-3 h-3 bg-bde-red rounded-full border border-black"></span>
+            <h3 class="font-syne font-black text-xl uppercase">PROPOSER UNE PR ÉTUDIANTE</h3>
+          </div>
+
+          <form id="idea-form" class="space-y-4">
+            <div>
+              <label class="block font-mono text-xs font-bold uppercase mb-1">TITRE DE L'INITIATIVE *</label>
+              <input type="text" id="idea-title" required placeholder="ex: Abonnement GitHub" class="w-full bg-white border-2 border-black text-black p-2.5 font-space text-sm focus:outline-none">
+            </div>
+            <div>
+              <label class="block font-mono text-xs font-bold uppercase mb-1">CATÉGORIE *</label>
+              <select id="idea-category" class="w-full bg-white border-2 border-black text-black p-2.5 font-space text-sm focus:outline-none">
+                <option value="CAMPUS">Campus & Équipement</option>
+                <option value="SOIRÉE">Événement / Soirée</option>
+                <option value="TECH">Hack & Tech</option>
+                <option value="GAMING">E-Sport & Gaming</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-mono text-xs font-bold uppercase mb-1">DESCRIPTION *</label>
+              <textarea id="idea-description" rows="3" required placeholder="Argumentaire..." class="w-full bg-white border-2 border-black text-black p-2.5 font-space text-sm focus:outline-none"></textarea>
+            </div>
+            <button type="submit" class="btn-neo w-full bg-bde-purple text-bde-cream font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-black">
+              PULL REQUEST MA PROPOSITION →
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-7 crew-slider flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pt-1 pb-4 px-1 -mx-1" id="ideas-list">
+          <div class="w-full shrink-0 snap-start space-y-4">
+          <div class="card-neo bg-bde-cream border-2 border-black p-5 shadow-neo-yellow flex items-start gap-4 text-black">
+            <button class="btn-neo flex flex-col items-center justify-center bg-bde-purple border-2 border-black p-3 min-w-[62px] text-bde-cream">
+              <span class="text-base font-black">▲</span><span class="font-mono font-bold text-sm">142</span>
+            </button>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="bg-bde-red text-bde-cream font-mono text-[10px] font-bold px-2 py-0.5 border border-black uppercase">CAMPUS</span>
+              </div>
+              <h4 class="font-syne font-black text-lg uppercase mb-1">Machine à café illimitée </h4>
+              <p class="font-space text-xs font-semibold text-black/80">
+                Remplacer la machine par un broyeur professionnel en accès libre.
+              </p>
+            </div>
+          </div>
+
+          <div class="card-neo bg-bde-red border-2 border-black p-5 shadow-neo-black flex items-start gap-4 text-bde-cream">
+            <button class="btn-neo flex flex-col items-center justify-center bg-bde-yellow border-2 border-black p-3 min-w-[62px] text-black">
+              <span class="text-base font-black">▲</span><span class="font-mono font-bold text-sm">98</span>
+            </button>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="bg-bde-cream text-black font-mono text-[10px] font-bold px-2 py-0.5 border border-black uppercase">TECH</span>
+              </div>
+              <h4 class="font-syne font-black text-lg uppercase mb-1">Cluster Kubernetes dédié</h4>
+              <p class="font-space text-xs font-semibold text-bde-cream/90">
+                Mettre à disposition un serveur bare-metal pour les APIs.
+              </p>
+            </div>
+          </div>
+
+          <div class="card-neo bg-black border-2 border-black p-5 shadow-neo-red flex items-start gap-4 text-bde-cream">
+            <button class="btn-neo flex flex-col items-center justify-center bg-bde-cream border-2 border-black p-3 min-w-[62px] text-black">
+              <span class="text-base font-black">▲</span><span class="font-mono font-bold text-sm">76</span>
+            </button>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="bg-bde-yellow text-black font-mono text-[10px] font-bold px-2 py-0.5 border border-black uppercase">SOIRÉE</span>
+              </div>
+              <h4 class="font-syne font-black text-lg uppercase mb-1">Silent Party au casque</h4>
+              <p class="font-space text-xs font-semibold text-bde-cream/80">
+                Organiser une soirée silencieuse avec 3 canaux audio à la bibliothèque.
+              </p>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t-[4px] border-black bg-[#150033] pt-14 pb-8 px-4 text-bde-cream">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b-2 border-bde-cream/30">
+      
+      <div class="md:col-span-5">
+        <div class="flex items-center mb-4">
+          <img src="logo_bde.svg" alt="Logo BDE ROOT_OVERFLOW" class="h-16 w-auto" style="aspect-ratio: 873 / 484;">
+        </div>
+        <p class="font-space text-sm max-w-sm mb-6 font-bold text-bde-cream/80">Développé avec amour, café et zéro dépendance superflue par les étudiants du campus.</p>
+      </div>
+
+      <div class="md:col-span-3">
+        <h4 class="font-mono font-black text-xs uppercase text-bde-yellow tracking-widest mb-4">// NAVIGATION</h4>
+        <ul class="space-y-2 font-space text-sm font-bold">
+          <li><a href="#piliers" class="hover:text-bde-yellow">4 Piliers Fondateurs</a></li>
+          <li><a href="#events" class="hover:text-bde-yellow">Calendrier Hackathons</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-4">
+        <h4 class="font-mono font-black text-xs uppercase text-bde-yellow tracking-widest mb-4">// LOCAL & ACCÈS</h4>
+        <p class="font-mono text-xs mb-3 font-bold">École Supérieure de Code<br>Salle 404, Bâtiment Turing</p>
+        <div class="flex flex-wrap gap-2 pt-2">
+          <span class="bg-black border border-bde-yellow px-3 py-1 font-mono text-xs text-bde-yellow font-bold">DISCORD : 1,420 devs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between text-xs font-mono font-bold gap-4">
+      <div>© 2026-2027 BDE ROOT_OVERFLOW.</div>
+      <div class="flex gap-4"><span class="text-bde-yellow">UPTIME: 99.98%</span></div>
+    </div>
+  </footer>
+
+  <!-- ================= TOAST NOTIFICATION ================= -->
+  <div id="toast-banner" class="fixed bottom-5 right-5 z-[100] hidden max-w-sm bg-bde-yellow text-black border-[3px] border-black px-4 py-3 font-mono text-xs font-bold shadow-neo-red"></div>
+
+  <!-- ================= ADMIN MODAL: EVENT ================= -->
+  <div id="event-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="w-full max-w-lg bg-bde-cream text-black border-[3.5px] border-black shadow-neo-yellow-lg p-6 relative my-8">
+      <div class="flex items-center justify-between border-b-2 border-black pb-3 mb-4">
+        <h3 id="event-modal-title" class="font-syne font-black text-xl uppercase">AJOUTER UN ÉVÉNEMENT</h3>
+        <button type="button" id="close-event-modal" class="w-8 h-8 bg-bde-red text-bde-cream font-mono font-black border-2 border-black">✕</button>
+      </div>
+      <form id="event-admin-form" class="space-y-3 font-mono text-xs">
+        <input type="hidden" id="evt-id">
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">JOUR *</label>
+            <input type="text" id="evt-day" required placeholder="12" maxlength="4" class="w-full bg-white border-2 border-black p-2 font-bold">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">MOIS *</label>
+            <input type="text" id="evt-month" required placeholder="NOV" maxlength="5" class="w-full bg-white border-2 border-black p-2 font-bold uppercase">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">CATÉGORIE *</label>
+            <select id="evt-category" class="w-full bg-white border-2 border-black p-2 font-bold">
+              <option value="tech">HACK & TECH</option>
+              <option value="party">SOIRÉE</option>
+              <option value="gaming">GAMING</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">TITRE DE L'ÉVÉNEMENT *</label>
+          <input type="text" id="evt-title" required placeholder="HACKATHON : PROMPT ENGINE 48H" class="w-full bg-white border-2 border-black p-2 font-bold">
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">DESCRIPTION *</label>
+          <textarea id="evt-description" rows="2" required placeholder="Description de l'événement..." class="w-full bg-white border-2 border-black p-2 font-space"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">BADGE PRINCIPAL</label>
+            <input type="text" id="evt-badge1" placeholder="TECH / DEV" class="w-full bg-white border-2 border-black p-2">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">BADGE SECONDAIRE</label>
+            <input type="text" id="evt-badge2" placeholder="PLACES LIMITÉES" class="w-full bg-white border-2 border-black p-2">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">LIEU *</label>
+            <input type="text" id="evt-location" required placeholder="Grand Amphi Tech" class="w-full bg-white border-2 border-black p-2">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">HORAIRE *</label>
+            <input type="text" id="evt-time" required placeholder="20:00 - 23:30" class="w-full bg-white border-2 border-black p-2">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">TARIF</label>
+            <input type="text" id="evt-price" placeholder="Gratuit" class="w-full bg-white border-2 border-black p-2">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">PLACES / SLOTS</label>
+            <input type="text" id="evt-slots" placeholder="68 / 80" class="w-full bg-white border-2 border-black p-2">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1.5">COULEUR DE LA CARTE *</label>
+          <input type="hidden" id="evt-theme" value="yellow">
+          <div id="evt-color-picker" class="grid grid-cols-5 gap-2">
+            <button type="button" data-evt-color="yellow" class="evt-color-swatch flex flex-col items-center gap-1 p-2 border-2 border-black bg-[#e1b70a] text-black font-bold uppercase text-[10px] shadow-neo-black">
+              <span class="w-5 h-5 rounded-full bg-[#e1b70a] border-2 border-black"></span>
+              <span>JAUNE</span>
+            </button>
+            <button type="button" data-evt-color="cream" class="evt-color-swatch flex flex-col items-center gap-1 p-2 border-2 border-black bg-[#FFF1B8] text-black font-bold uppercase text-[10px]">
+              <span class="w-5 h-5 rounded-full bg-[#FFF1B8] border-2 border-black"></span>
+              <span>CRÈME</span>
+            </button>
+            <button type="button" data-evt-color="purple" class="evt-color-swatch flex flex-col items-center gap-1 p-2 border-2 border-black bg-[#2e006c] text-bde-cream font-bold uppercase text-[10px]">
+              <span class="w-5 h-5 rounded-full bg-[#2e006c] border-2 border-bde-cream"></span>
+              <span>VIOLET</span>
+            </button>
+            <button type="button" data-evt-color="red" class="evt-color-swatch flex flex-col items-center gap-1 p-2 border-2 border-black bg-[#C60800] text-bde-cream font-bold uppercase text-[10px]">
+              <span class="w-5 h-5 rounded-full bg-[#C60800] border-2 border-bde-cream"></span>
+              <span>ROUGE</span>
+            </button>
+            <button type="button" data-evt-color="black" class="evt-color-swatch flex flex-col items-center gap-1 p-2 border-2 border-black bg-black text-bde-cream font-bold uppercase text-[10px]">
+              <span class="w-5 h-5 rounded-full bg-black border-2 border-bde-yellow"></span>
+              <span>NOIR</span>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">TEXTE DU BOUTON</label>
+          <input type="text" id="evt-cta" placeholder="RÉSERVER MA PLACE →" class="w-full bg-white border-2 border-black p-2">
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="submit" class="btn-neo w-full bg-bde-purple text-bde-cream font-syne font-black text-sm uppercase py-3 border-2 border-black shadow-neo-black">
+            ENREGISTRER L'ÉVÉNEMENT →
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN MODAL: BDE CREW MEMBER ================= -->
+  <div id="crew-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="w-full max-w-lg bg-bde-yellow text-black border-[3.5px] border-black shadow-neo-red-lg p-6 relative my-8">
+      <div class="flex items-center justify-between border-b-2 border-black pb-3 mb-4">
+        <h3 id="crew-modal-title" class="font-syne font-black text-xl uppercase">AJOUTER UN MEMBRE BDE</h3>
+        <button type="button" id="close-crew-modal" class="w-8 h-8 bg-black text-bde-cream font-mono font-black border-2 border-black">✕</button>
+      </div>
+      <form id="crew-admin-form" class="space-y-3 font-mono text-xs">
+        <input type="hidden" id="crew-id">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">LOGIN 42 (ACCÈS ADMIN BDE)</label>
+            <input type="text" id="crew-login" placeholder="ex: shapetit" class="w-full bg-white border-2 border-black p-2 font-bold lowercase">
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">RÔLE & NIVEAU *</label>
+            <input type="text" id="crew-role" required placeholder="PRÉSIDENTE // LVL.99" class="w-full bg-white border-2 border-black p-2 font-bold uppercase">
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">NOM / PSEUDO AFFICHÉ *</label>
+          <input type="text" id="crew-name" required placeholder='SARAH "KERNEL" M.' class="w-full bg-white border-2 border-black p-2 font-bold">
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">CITATION / BIO COURTE</label>
+          <input type="text" id="crew-quote" placeholder="Si c'est pas scriptable, ça existe pas." class="w-full bg-white border-2 border-black p-2">
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">STACK TECHNIQUE</label>
+          <input type="text" id="crew-stack" placeholder="Go, Kubernetes, Arch" class="w-full bg-white border-2 border-black p-2">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold uppercase mb-1">ICÔNE PAR DÉFAUT</label>
+            <select id="crew-avatar-type" class="w-full bg-white border-2 border-black p-2 font-bold">
+              <option value="bot">Robot Kernel</option>
+              <option value="vault">Pyramide / Vault</option>
+              <option value="dj">DJ / Audio</option>
+              <option value="hex">Hexagone Core</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold uppercase mb-1">COULEUR CARTE</label>
+            <select id="crew-theme" class="w-full bg-white border-2 border-black p-2 font-bold">
+              <option value="purple">Violet BDE</option>
+              <option value="red">Rouge BDE</option>
+              <option value="yellow">Jaune BDE</option>
+              <option value="black">Noir</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block font-bold uppercase mb-1">PHOTO DE LA CARTE (GLISSER-DÉPOSER OU CLIC)</label>
+          <input type="hidden" id="crew-avatar-url">
+          <input type="file" id="crew-file-input" accept="image/*" class="hidden">
+          <div id="crew-dropzone" class="bg-white border-2 border-dashed border-black p-3 text-center cursor-pointer hover:bg-bde-cream transition-colors relative">
+            <div id="crew-dropzone-empty" class="py-3 flex flex-col items-center gap-1">
+              <span class="font-syne font-black text-sm uppercase">📥 GLISSEZ UNE PHOTO ICI</span>
+              <span class="text-[11px] text-black/70 font-bold">ou cliquez pour parcourir (PNG, JPG, WEBP)</span>
+            </div>
+            <div id="crew-dropzone-preview" class="hidden flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3 text-left">
+                <img id="crew-preview-img" src="" alt="Aperçu" class="w-16 h-16 object-cover border-2 border-black bg-black shrink-0">
+                <div>
+                  <div class="font-bold uppercase text-black">PHOTO SÉLECTIONNÉE</div>
+                  <div class="text-[10px] text-black/70">Glissez une autre image pour remplacer</div>
+                </div>
+              </div>
+              <button type="button" id="crew-clear-photo" class="bg-bde-red text-bde-cream font-mono font-black text-[10px] px-2.5 py-1.5 border-2 border-black hover:bg-black shrink-0">
+                ✕ RETIRER
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="pt-2">
+          <button type="submit" class="btn-neo w-full bg-black text-bde-yellow font-syne font-black text-sm uppercase py-3 border-2 border-black shadow-neo-cream">
+            ENREGISTRER LE MEMBRE BDE →
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN MODAL: EVENT CLICK LOGS ================= -->
+  <div id="event-logs-modal" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+    <div class="w-full max-w-2xl bg-black text-bde-cream border-[3.5px] border-black shadow-neo-yellow-lg p-6 relative my-8">
+      <div class="flex items-center justify-between border-b-2 border-bde-yellow pb-3 mb-4">
+        <div>
+          <div class="font-mono text-[10px] text-bde-yellow uppercase tracking-widest">// AUDIT_TRAIL // 42_INTRA_LOGS</div>
+          <h3 id="event-logs-modal-title" class="font-syne font-black text-xl uppercase text-bde-cream">JOURNAL DES CLICS ÉVÉNEMENTS</h3>
+        </div>
+        <button type="button" id="close-event-logs-modal" class="w-8 h-8 bg-bde-red text-bde-cream font-mono font-black border-2 border-black">✕</button>
+      </div>
+      <div id="event-logs-list" class="space-y-2 max-h-[420px] overflow-y-auto font-mono text-xs pr-1"></div>
+    </div>
+  </div>
+
+  <script>
+    // ====================================================
+    // STATE & API CONFIG
+    // ====================================================
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:5001' : '';
+    const TOKEN_STORAGE_KEY = 'bde_42_session_token';
+
+    let currentUser = null;
+    let activeCategoryFilter = 'all';
+    let eventLogsData = [];
+    let ideasData = [
+      {
+        id: 'idea-1', title: 'Machine à café illimitée', category: 'CAMPUS',
+        description: 'Remplacer la machine par un broyeur professionnel en accès libre.',
+        votes: 142, voters: [], authorLogin: 'kernel', theme: 'cream'
+      },
+      {
+        id: 'idea-2', title: 'Cluster Kubernetes dédié', category: 'TECH',
+        description: 'Mettre à disposition un serveur bare-metal pour les APIs.',
+        votes: 98, voters: [], authorLogin: 'debug', theme: 'red'
+      },
+      {
+        id: 'idea-3', title: 'Silent Party au casque', category: 'SOIRÉE',
+        description: 'Organiser une soirée silencieuse avec 3 canaux audio à la bibliothèque.',
+        votes: 76, voters: [], authorLogin: 'beat', theme: 'black'
+      }
+    ];
+
+    let eventsData = [
+      {
+        id: 'evt-1', day: '12', month: 'NOV', category: 'tech',
+        badge1: 'TECH / DEV', badge2: 'PLACES LIMITÉES',
+        title: 'HACKATHON : PROMPT ENGINE 48H',
+        description: "Développez des agents autonomes et des applications IA sans dormir. RedBull à volonté et jury d'experts.",
+        location: 'Grand Amphi Tech', time: '20:00 - DIM 20:00',
+        price: 'Gratuit', slots: '68 / 80', ctaText: 'RÉSERVER MA PLACE →', theme: 'yellow'
+      },
+      {
+        id: 'evt-2', day: '21', month: 'NOV', category: 'party',
+        badge1: 'SOIRÉE OFFICIELLE', badge2: 'SHOTS INCLUS',
+        title: 'SOIRÉE SUDO_NIGHT : WAREHOUSE',
+        description: "Privatisation d'un hangar de 1000m² avec soundsystem Funktion-One. Line-up de 5 DJs étudiants, lasers.",
+        location: 'Club Le RedRoom', time: '23:00 - 05:30',
+        price: '8€ / 14€ Ext', slots: '280 / 350', ctaText: 'PRENDRE MON BILLET →', theme: 'cream'
+      },
+      {
+        id: 'evt-3', day: '05', month: 'DÉC', category: 'gaming',
+        badge1: 'E-SPORT ARENA', badge2: '',
+        title: 'TOURNOI SMASH BROS ULTIMATE & CS2',
+        description: 'Tournoi officiel homologué. Écrans 240Hz, setup streaming avec casters live et cashprize de 800€.',
+        location: 'Salle Réseau S102', time: '14:00 - 22:00',
+        price: "2€ d'inscription", slots: '32 / 64', ctaText: 'INSCRIRE MON ÉQUIPE →', theme: 'purple'
+      },
+      {
+        id: 'evt-4', day: '14', month: 'DÉC', category: 'tech',
+        badge1: 'WORKSHOP', badge2: '',
+        title: 'WORKSHOP : RUST, KERNEL & EXPLOIT',
+        description: 'Atelier intensif animé par des alumni de chez Datadog et Ledger. Conception de drivers.',
+        location: 'Salle Lab Linux', time: '18:30 - 21:30',
+        price: 'Ouvert à tous', slots: '40 / 45', ctaText: 'RÉSERVER MA PLACE →', theme: 'black'
+      }
+    ];
+
+    let crewData = [
+      {
+        id: 'crew-1', login: 'shapetit', name: 'SARAH "KERNEL" M.',
+        role: 'PRÉSIDENTE // LVL.99', quote: "Si c'est pas scriptable, ça existe pas.",
+        stack: 'Go, Kubernetes, Arch', avatarUrl: '', avatarType: 'bot', theme: 'purple'
+      },
+      {
+        id: 'crew-2', login: '', name: 'ALEXANDRE D.',
+        role: 'TRÉSORIER // LVL.84', quote: 'Chaque centime va dans les bières.',
+        stack: 'Excel, Rust, Solidity', avatarUrl: '', avatarType: 'vault', theme: 'red'
+      },
+      {
+        id: 'crew-3', login: '', name: 'INÈS "BEAT" B.',
+        role: 'RESP. SOIRÉES // LVL.92', quote: "Pas de sommeil avant d'avoir pushé la track.",
+        stack: 'Ableton, React, TS', avatarUrl: '', avatarType: 'dj', theme: 'yellow'
+      },
+      {
+        id: 'crew-4', login: '', name: 'HUGO "DEBUG" V.',
+        role: 'LEAD TECH // LVL.95', quote: "404 : Le mot 'impossible' n'a pas été trouvé.",
+        stack: 'C++, Kernel, Neovim', avatarUrl: '', avatarType: 'hex', theme: 'black'
+      }
+    ];
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast-banner');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.className = `fixed bottom-5 right-5 z-[100] max-w-sm border-[3px] border-black px-4 py-3 font-mono text-xs font-bold ${
+        isError ? 'bg-bde-red text-bde-cream shadow-neo-yellow' : 'bg-bde-yellow text-black shadow-neo-red'
+      }`;
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.add('hidden'), 4000);
+    }
+
+    function getAuthHeaders() {
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+      return token ? { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } : { 'Content-Type': 'application/json' };
+    }
+
+    // ====================================================
+    // RENDER EVENTS & CREW
+    // ====================================================
+    function updateFilterCounts() {
+      const counts = {
+        all: eventsData.length,
+        tech: eventsData.filter(e => e.category === 'tech').length,
+        party: eventsData.filter(e => e.category === 'party').length,
+        gaming: eventsData.filter(e => e.category === 'gaming').length,
+      };
+      const labels = { all: 'TOUS', tech: 'HACK & TECH', party: 'SOIRÉES', gaming: 'GAMING' };
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const cat = btn.getAttribute('data-filter');
+        if (labels[cat] !== undefined) {
+          btn.textContent = `${labels[cat]} [${counts[cat] ?? 0}]`;
+        }
+      });
+    }
+
+    function renderEventCardHtml(evt) {
+      const isAdmin = Boolean(currentUser && currentUser.isAdmin);
+      const themes = {
+        yellow: {
+          card: 'bg-bde-yellow text-black shadow-neo-black',
+          dateBox: 'bg-black text-bde-cream',
+          badge1: 'bg-bde-purple text-bde-cream',
+          badge2: 'bg-bde-red text-bde-cream animate-pulse',
+          desc: 'text-black/80 font-bold',
+          infoBox: 'text-black bg-white/40 border-black/30 font-bold',
+          slotsColor: 'text-bde-purple',
+          btn: 'bg-black text-bde-yellow shadow-neo-cream'
+        },
+        cream: {
+          card: 'bg-bde-cream text-black shadow-neo-black',
+          dateBox: 'bg-bde-red text-bde-cream',
+          badge1: 'bg-bde-red text-bde-cream',
+          badge2: 'bg-bde-purple text-bde-cream',
+          desc: 'text-black/80 font-bold',
+          infoBox: 'text-black bg-white/50 border-black/30 font-bold',
+          slotsColor: 'text-bde-red',
+          btn: 'bg-bde-purple text-bde-cream shadow-neo-yellow'
+        },
+        purple: {
+          card: 'bg-bde-purple text-bde-cream shadow-neo-yellow',
+          dateBox: 'bg-bde-yellow text-black',
+          badge1: 'bg-bde-cream text-black',
+          badge2: 'bg-bde-red text-bde-cream',
+          desc: 'text-bde-cream/90 font-semibold',
+          infoBox: 'text-bde-cream bg-black/20 border-black/30',
+          slotsColor: 'text-bde-yellow font-bold',
+          btn: 'bg-bde-yellow text-black shadow-neo-cream'
+        },
+        red: {
+          card: 'bg-bde-red text-bde-cream shadow-neo-black',
+          dateBox: 'bg-black text-bde-yellow',
+          badge1: 'bg-bde-yellow text-black',
+          badge2: 'bg-black text-bde-cream',
+          desc: 'text-bde-cream/95 font-semibold',
+          infoBox: 'text-bde-cream bg-black/25 border-black/40 font-bold',
+          slotsColor: 'text-bde-yellow font-bold',
+          btn: 'bg-black text-bde-cream shadow-neo-yellow'
+        },
+        black: {
+          card: 'bg-black text-bde-cream shadow-neo-cream',
+          dateBox: 'bg-bde-cream text-black',
+          badge1: 'bg-bde-red text-bde-cream',
+          badge2: 'bg-bde-yellow text-black',
+          desc: 'text-bde-cream/80',
+          infoBox: 'text-bde-cream bg-white/10 border-bde-cream/30',
+          slotsColor: 'text-bde-yellow font-bold',
+          btn: 'bg-bde-cream text-black shadow-neo-purple'
+        }
+      };
+
+      const t = themes[evt.theme] || themes.yellow;
+      const visible = activeCategoryFilter === 'all' || evt.category === activeCategoryFilter;
+      const regs = Array.isArray(evt.registrations) ? evt.registrations : [];
+      const userClicked = currentUser && regs.some(r => (r.login || '').toLowerCase() === (currentUser.login || '').toLowerCase());
+
+      return `
+        <div class="event-card card-neo ${t.card} border-2 border-black p-6 flex flex-col justify-between relative" data-category="${escapeHtml(evt.category)}" style="display: ${visible ? 'flex' : 'none'}">
+          <div>
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="${t.dateBox} font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
+                <span class="text-2xl block">${escapeHtml(evt.day)}</span><span class="text-xs uppercase">${escapeHtml(evt.month)}</span>
+              </div>
+              <div class="flex flex-wrap gap-2 justify-end items-center">
+                ${evt.badge1 ? `<span class="${t.badge1} font-mono text-xs px-2.5 py-1 font-bold border border-black">${escapeHtml(evt.badge1)}</span>` : ''}
+                ${evt.badge2 ? `<span class="${t.badge2} font-mono text-xs px-2.5 py-1 font-bold border border-black">${escapeHtml(evt.badge2)}</span>` : ''}
+                ${isAdmin ? `
+                  <button type="button" data-logs-event="${escapeHtml(evt.id)}" class="bg-black text-bde-yellow font-mono text-[11px] font-black px-2 py-1 border-2 border-black hover:bg-bde-purple hover:text-bde-cream" title="Voir les clics / inscrits">📋 ${regs.length}</button>
+                  <button type="button" data-edit-event="${escapeHtml(evt.id)}" class="bg-bde-cream text-black font-mono text-[11px] font-black px-2 py-1 border-2 border-black hover:bg-bde-yellow" title="Modifier">✎</button>
+                  <button type="button" data-delete-event="${escapeHtml(evt.id)}" class="bg-bde-red text-bde-cream font-mono text-[11px] font-black px-2 py-1 border-2 border-black hover:bg-black" title="Supprimer">🗑</button>
+                ` : ''}
+              </div>
+            </div>
+            <h3 class="font-syne font-black text-2xl uppercase mb-2">${escapeHtml(evt.title)}</h3>
+            <p class="font-space ${t.desc} text-sm mb-6">${escapeHtml(evt.description)}</p>
+            <div class="space-y-2 font-mono text-xs mb-6 p-3 border ${t.infoBox}">
+              <div class="flex justify-between"><span>📍 LIEU : ${escapeHtml(evt.location)}</span><span>⏰ ${escapeHtml(evt.time)}</span></div>
+              <div class="flex justify-between"><span>🎟️ TARIF : ${escapeHtml(evt.price)}</span><span class="${t.slotsColor}">PLACES : ${escapeHtml(evt.slots)}</span></div>
+            </div>
+          </div>
+          <button type="button" ${userClicked ? 'disabled' : `data-click-event="${escapeHtml(evt.id)}"`} class="w-full ${userClicked ? 'bg-black/80 text-bde-yellow cursor-not-allowed opacity-80' : `btn-neo ${t.btn}`} font-space font-black text-sm uppercase py-3 border-2 border-black text-center">
+            ${userClicked ? `✓ DÉJÀ INSCRIT (@${escapeHtml(currentUser.login)})` : escapeHtml(evt.ctaText || 'RÉSERVER MA PLACE →')}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderEvents() {
+      const grid = document.getElementById('events-grid');
+      if (!grid) return;
+      grid.innerHTML = eventsData.map(renderEventCardHtml).join('');
+      updateFilterCounts();
+    }
+
+    function getCrewAvatarSvg(type, theme) {
+      const isYellowCard = theme === 'yellow';
+      const isBlackCard = theme === 'black';
+      const svgClass = isBlackCard
+        ? 'w-24 h-24 text-black group-hover:scale-105 transition-transform'
+        : isYellowCard
+          ? 'w-24 h-24 text-bde-purple group-hover:scale-105 transition-transform'
+          : 'w-24 h-24 text-bde-yellow group-hover:scale-105 transition-transform';
+
+      if (type === 'vault') {
+        return `<svg class="${svgClass}" viewBox="0 0 100 100" fill="currentColor">
+          <polygon points="50,15 80,45 80,85 20,85 20,45" /><circle cx="50" cy="50" r="12" fill="#e1b70a" /><line x1="30" y1="35" x2="70" y2="35" stroke="#e1b70a" stroke-width="4" />
+        </svg>`;
+      }
+      if (type === 'dj') {
+        return `<svg class="${svgClass}" viewBox="0 0 100 100" fill="currentColor">
+          <circle cx="50" cy="40" r="22" /><path d="M20 90 C20 65 35 60 50 60 C65 60 80 65 80 90 Z" /><rect x="35" y="32" width="30" height="8" fill="#2e006c" />
+        </svg>`;
+      }
+      if (type === 'hex') {
+        return `<svg class="${svgClass}" viewBox="0 0 100 100" fill="currentColor">
+          <polygon points="50,10 90,30 90,75 50,95 10,75 10,30" /><circle cx="50" cy="50" r="18" fill="#e1b70a" /><polygon points="50,40 60,55 40,55" fill="#000" />
+        </svg>`;
+      }
+      return `<svg class="${svgClass}" viewBox="0 0 100 100" fill="currentColor">
+        <rect x="25" y="20" width="50" height="40" rx="4" /><rect x="35" y="65" width="30" height="25" /><rect x="15" y="30" width="8" height="20" /><rect x="77" y="30" width="8" height="20" /><circle cx="40" cy="38" r="5" fill="#e1b70a" /><circle cx="60" cy="38" r="5" fill="#e1b70a" /><rect x="38" y="48" width="24" height="4" fill="#e1b70a" />
+      </svg>`;
+    }
+
+    function renderCrewCardHtml(member) {
+      const isAdmin = Boolean(currentUser && currentUser.isAdmin);
+      const themes = {
+        purple: {
+          card: 'bg-bde-purple text-bde-cream shadow-neo-black',
+          badge: 'bg-bde-yellow text-black',
+          avatarBg: 'bg-black',
+          quote: 'text-bde-yellow',
+          divider: 'border-bde-cream/30'
+        },
+        red: {
+          card: 'bg-bde-red text-bde-cream shadow-neo-black',
+          badge: 'bg-black text-bde-cream',
+          avatarBg: 'bg-black',
+          quote: 'text-bde-yellow',
+          divider: 'border-bde-cream/30'
+        },
+        yellow: {
+          card: 'bg-bde-yellow text-black shadow-neo-black',
+          badge: 'bg-bde-purple text-bde-cream',
+          avatarBg: 'bg-bde-cream',
+          quote: 'text-bde-purple',
+          divider: 'border-black/20'
+        },
+        black: {
+          card: 'bg-black text-bde-cream shadow-neo-purple',
+          badge: 'bg-bde-red text-bde-cream',
+          avatarBg: 'bg-bde-yellow',
+          quote: 'text-bde-yellow',
+          divider: 'border-bde-cream/30'
+        }
+      };
+
+      const t = themes[member.theme] || themes.purple;
+      const avatarContent = member.avatarUrl
+        ? `<img src="${escapeHtml(member.avatarUrl)}" alt="${escapeHtml(member.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">`
+        : getCrewAvatarSvg(member.avatarType || 'bot', member.theme);
+
+      return `
+        <div class="card-neo ${t.card} w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-4.5rem)/4)] shrink-0 snap-start border-[3px] border-black p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-center gap-1 mb-4 flex-wrap">
+              <span class="${t.badge} font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">${escapeHtml(member.role)}</span>
+              <div class="flex items-center gap-1">
+                ${member.login ? `<span class="bg-black text-bde-yellow font-mono font-bold text-[10px] px-1.5 py-0.5 border border-black">@${escapeHtml(member.login)}</span>` : ''}
+                ${isAdmin ? `
+                  <button type="button" data-edit-crew="${escapeHtml(member.id)}" class="bg-bde-cream text-black font-mono text-[10px] font-black px-1.5 py-0.5 border border-black hover:bg-bde-yellow" title="Modifier">✎</button>
+                  <button type="button" data-delete-crew="${escapeHtml(member.id)}" class="bg-bde-red text-bde-cream font-mono text-[10px] font-black px-1.5 py-0.5 border border-black hover:bg-black" title="Supprimer">🗑</button>
+                ` : ''}
+              </div>
+            </div>
+            <div class="h-44 ${t.avatarBg} border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
+              ${avatarContent}
+            </div>
+            <h3 class="font-syne font-black text-xl uppercase mb-1">${escapeHtml(member.name)}</h3>
+            <p class="font-mono text-xs ${t.quote} mb-3 font-bold">"${escapeHtml(member.quote)}"</p>
+            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t ${t.divider} pt-3">
+              <div class="flex justify-between"><span>STACK:</span> <span>${escapeHtml(member.stack)}</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateCrewSliderState() {
+      const grid = document.getElementById('crew-grid');
+      const prevBtn = document.getElementById('crew-prev-btn');
+      const nextBtn = document.getElementById('crew-next-btn');
+      const countBadge = document.getElementById('crew-count-badge');
+
+      if (countBadge) {
+        countBadge.textContent = `${crewData.length} MEMBRE${crewData.length > 1 ? 'S' : ''}`;
+      }
+      if (!grid || !prevBtn || !nextBtn) return;
+
+      const maxScroll = Math.max(0, grid.scrollWidth - grid.clientWidth);
+      prevBtn.disabled = grid.scrollLeft <= 4;
+      nextBtn.disabled = grid.scrollLeft >= maxScroll - 4;
+    }
+
+    function scrollCrewSlider(direction) {
+      const grid = document.getElementById('crew-grid');
+      if (!grid) return;
+      const firstCard = grid.querySelector('.card-neo');
+      const step = firstCard ? firstCard.getBoundingClientRect().width + 24 : 320;
+      grid.scrollBy({ left: direction * step, behavior: 'smooth' });
+    }
+
+    document.getElementById('crew-prev-btn')?.addEventListener('click', () => scrollCrewSlider(-1));
+    document.getElementById('crew-next-btn')?.addEventListener('click', () => scrollCrewSlider(1));
+    document.getElementById('crew-grid')?.addEventListener('scroll', updateCrewSliderState);
+    window.addEventListener('resize', updateCrewSliderState);
+
+    function renderCrew() {
+      const grid = document.getElementById('crew-grid');
+      if (!grid) return;
+      grid.innerHTML = crewData.map(renderCrewCardHtml).join('');
+      requestAnimationFrame(updateCrewSliderState);
+    }
+
+    function renderIdeaCardHtml(idea) {
+      const isAdmin = Boolean(currentUser && currentUser.isAdmin);
+      const voters = Array.isArray(idea.voters) ? idea.voters : [];
+      const hasVoted = currentUser && voters.includes((currentUser.login || '').toLowerCase());
+
+      const themes = {
+        cream: {
+          card: 'bg-bde-cream text-black shadow-neo-yellow',
+          voteBtn: hasVoted ? 'bg-black text-bde-yellow' : 'bg-bde-purple text-bde-cream',
+          badge: 'bg-bde-red text-bde-cream',
+          desc: 'text-black/80'
+        },
+        red: {
+          card: 'bg-bde-red text-bde-cream shadow-neo-black',
+          voteBtn: hasVoted ? 'bg-black text-bde-yellow' : 'bg-bde-yellow text-black',
+          badge: 'bg-bde-cream text-black',
+          desc: 'text-bde-cream/90'
+        },
+        black: {
+          card: 'bg-black text-bde-cream shadow-neo-red',
+          voteBtn: hasVoted ? 'bg-bde-yellow text-black' : 'bg-bde-cream text-black',
+          badge: 'bg-bde-yellow text-black',
+          desc: 'text-bde-cream/80'
+        }
+      };
+
+      const t = themes[idea.theme] || themes.cream;
+      return `
+        <div class="card-neo ${t.card} border-2 border-black p-5 flex items-start gap-4">
+          <button type="button" ${hasVoted ? 'disabled' : `data-vote-idea="${escapeHtml(idea.id)}"`} class="${hasVoted ? 'opacity-80 cursor-not-allowed' : 'btn-neo'} flex flex-col items-center justify-center ${t.voteBtn} border-2 border-black p-3 min-w-[62px]">
+            <span class="text-base font-black">${hasVoted ? '✓' : '▲'}</span>
+            <span class="font-mono font-bold text-sm">${escapeHtml(idea.votes ?? 0)}</span>
+          </button>
+          <div class="flex-1">
+            <div class="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="${t.badge} font-mono text-[10px] font-bold px-2 py-0.5 border border-black uppercase">${escapeHtml(idea.category || 'CAMPUS')}</span>
+                ${idea.authorLogin ? `<span class="bg-black text-bde-yellow font-mono text-[10px] font-bold px-1.5 py-0.5 border border-black">@${escapeHtml(idea.authorLogin)}</span>` : ''}
+              </div>
+              ${isAdmin ? `
+                <button type="button" data-delete-idea="${escapeHtml(idea.id)}" class="bg-bde-red text-bde-cream font-mono text-[10px] font-black px-2 py-0.5 border border-black hover:bg-black" title="Supprimer cette proposition">🗑</button>
+              ` : ''}
+            </div>
+            <h4 class="font-syne font-black text-lg uppercase mb-1">${escapeHtml(idea.title)}</h4>
+            <p class="font-space text-xs font-semibold ${t.desc}">
+              ${escapeHtml(idea.description)}
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateIdeasSliderState() {
+      const list = document.getElementById('ideas-list');
+      const prevBtn = document.getElementById('ideas-prev-btn');
+      const nextBtn = document.getElementById('ideas-next-btn');
+      const countBadge = document.getElementById('ideas-count-badge');
+
+      const totalPages = Math.max(1, Math.ceil(ideasData.length / 3));
+      const currentPage = list && list.clientWidth > 0
+        ? Math.min(totalPages, Math.floor((list.scrollLeft + list.clientWidth * 0.5) / list.clientWidth) + 1)
+        : 1;
+
+      if (countBadge) {
+        countBadge.textContent = `${ideasData.length} PR${ideasData.length > 1 ? 's' : ''} // ${currentPage}/${totalPages}`;
+      }
+      if (!list || !prevBtn || !nextBtn) return;
+
+      const maxScroll = Math.max(0, list.scrollWidth - list.clientWidth);
+      prevBtn.disabled = list.scrollLeft <= 4;
+      nextBtn.disabled = list.scrollLeft >= maxScroll - 4;
+    }
+
+    function scrollIdeasSlider(direction) {
+      const list = document.getElementById('ideas-list');
+      if (!list) return;
+      const step = list.clientWidth + 24;
+      list.scrollBy({ left: direction * step, behavior: 'smooth' });
+    }
+
+    document.getElementById('ideas-prev-btn')?.addEventListener('click', () => scrollIdeasSlider(-1));
+    document.getElementById('ideas-next-btn')?.addEventListener('click', () => scrollIdeasSlider(1));
+    document.getElementById('ideas-list')?.addEventListener('scroll', updateIdeasSliderState);
+    window.addEventListener('resize', updateIdeasSliderState);
+
+    function renderIdeas() {
+      const list = document.getElementById('ideas-list');
+      if (!list) return;
+      if (ideasData.length === 0) {
+        list.innerHTML = `<div class="w-full shrink-0 snap-start p-6 border-2 border-black bg-black/40 text-bde-cream font-mono text-xs text-center">Aucune proposition pour le moment.</div>`;
+      } else {
+        const slides = [];
+        for (let i = 0; i < ideasData.length; i += 3) {
+          const chunk = ideasData.slice(i, i + 3);
+          slides.push(`
+            <div class="w-full shrink-0 snap-start space-y-4">
+              ${chunk.map(renderIdeaCardHtml).join('')}
+            </div>
+          `);
+        }
+        list.innerHTML = slides.join('');
+      }
+      requestAnimationFrame(updateIdeasSliderState);
+    }
+
+    function updateAuthUI() {
+      const authContainer = document.getElementById('auth-container');
+      const addEventBtn = document.getElementById('add-event-btn');
+      const viewEventLogsBtn = document.getElementById('view-event-logs-btn');
+      const addCrewBtn = document.getElementById('add-crew-btn');
+      const isAdmin = Boolean(currentUser && currentUser.isAdmin);
+
+      if (addEventBtn) addEventBtn.classList.toggle('hidden', !isAdmin);
+      if (viewEventLogsBtn) viewEventLogsBtn.classList.toggle('hidden', !isAdmin);
+      if (addCrewBtn) addCrewBtn.classList.toggle('hidden', !isAdmin);
+
+      if (!authContainer) return;
+
+      if (!currentUser) {
+        authContainer.innerHTML = `
+          <button id="login-42-btn" type="button" class="btn-neo bg-black text-bde-cream hover:bg-bde-red font-mono font-extrabold text-xs uppercase px-3.5 py-2 border-[2.5px] border-black shadow-neo-yellow flex items-center gap-2 whitespace-nowrap">
+            <span class="bg-bde-yellow text-black px-1.5 py-0.5 font-black text-[10px] border border-black leading-none">42</span>
+            <span>CONNEXION</span>
+          </button>
+        `;
+        document.getElementById('login-42-btn')?.addEventListener('click', start42Login);
+      } else {
+        authContainer.innerHTML = `
+          <div class="flex items-center gap-2 bg-black border-[2.5px] border-black px-2.5 py-1.5 shadow-neo-yellow font-mono text-xs">
+            ${currentUser.avatarUrl ? `<img src="${escapeHtml(currentUser.avatarUrl)}" alt="" class="w-5 h-5 rounded-full border border-bde-yellow object-cover">` : ''}
+            <span class="text-bde-cream font-bold">@${escapeHtml(currentUser.login)}</span>
+            ${isAdmin
+              ? `<span class="bg-bde-yellow text-black font-black text-[10px] px-1.5 py-0.5 border border-black uppercase">BDE ADMIN</span>`
+              : `<span class="bg-bde-purple text-bde-cream font-bold text-[10px] px-1.5 py-0.5 border border-black uppercase">STUDENT</span>`
+            }
+            <button id="logout-btn" type="button" title="Se déconnecter" class="text-bde-red hover:text-bde-yellow font-black px-1">✕</button>
+          </div>
+        `;
+        document.getElementById('logout-btn')?.addEventListener('click', logout42);
+      }
+
+      renderEvents();
+      renderCrew();
+      renderIdeas();
+    }
+
+    // ====================================================
+    // 42 OAUTH & API SYNC
+    // ====================================================
+    async function start42Login() {
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/42/url`);
+        const data = await res.json();
+        if (!res.ok || !data.url) {
+          throw new Error(data.error || 'Impossible de générer le lien OAuth 42');
+        }
+        window.location.href = data.url;
+      } catch (err) {
+        showToast(`Erreur 42 Auth: ${err.message}. Vérifiez que le serveur tourne (npm start).`, true);
+      }
+    }
+
+    async function logout42() {
+      try {
+        await fetch(`${API_BASE}/api/auth/logout`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+      } catch (_) {}
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      currentUser = null;
+      updateAuthUI();
+      showToast('Déconnecté de 42 Intra.');
+    }
+
+    async function initApp() {
+      // Check URL params for OAuth callback token or error
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get('token');
+      const errorFromUrl = urlParams.get('auth_error');
+
+      if (tokenFromUrl) {
+        localStorage.setItem(TOKEN_STORAGE_KEY, tokenFromUrl);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      if (errorFromUrl) {
+        showToast(errorFromUrl, true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Load events & crew from backend API
+      try {
+        const dataRes = await fetch(`${API_BASE}/api/data`);
+        if (dataRes.ok) {
+          const store = await dataRes.json();
+          if (Array.isArray(store.events)) eventsData = store.events;
+          if (Array.isArray(store.crew)) crewData = store.crew;
+          if (Array.isArray(store.eventLogs)) eventLogsData = store.eventLogs;
+          if (Array.isArray(store.ideas)) ideasData = store.ideas;
+        }
+      } catch (_) {
+        // Offline / static file fallback uses default eventsData & crewData
+      }
+
+      // Verify current session token if present
+      const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (storedToken) {
+        try {
+          const meRes = await fetch(`${API_BASE}/api/auth/me`, {
+            headers: getAuthHeaders()
+          });
+          if (meRes.ok) {
+            const { user } = await meRes.json();
+            currentUser = user;
+            const pendingEventId = localStorage.getItem('bde_pending_event_click');
+            if (pendingEventId) {
+              localStorage.removeItem('bde_pending_event_click');
+              await registerForEvent(pendingEventId);
+            } else if (tokenFromUrl) {
+              showToast(
+                user.isAdmin
+                  ? `Connecté en tant que @${user.login} [ACCÈS ADMIN BDE ACTIVÉ]`
+                  : `Connecté en tant que @${user.login} (Étudiant 42)`
+              );
+            }
+          } else {
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+          }
+        } catch (_) {}
+      }
+
+      updateAuthUI();
+    }
+
+    // ====================================================
+    // CATEGORY FILTERS
+    // ====================================================
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('active', 'bg-bde-yellow', 'text-black', 'shadow-neo-red');
+          b.classList.add('bg-black', 'text-bde-cream');
+        });
+
+        btn.classList.add('active', 'bg-bde-yellow', 'text-black', 'shadow-neo-red');
+        btn.classList.remove('bg-black', 'text-bde-cream');
+
+        activeCategoryFilter = btn.getAttribute('data-filter') || 'all';
+        renderEvents();
+      });
+    });
+
+    // ====================================================
+    // ADMIN MODALS & CRUD HANDLERS
+    // ====================================================
+    const eventModal = document.getElementById('event-modal');
+    const eventAdminForm = document.getElementById('event-admin-form');
+    const crewModal = document.getElementById('crew-modal');
+    const crewAdminForm = document.getElementById('crew-admin-form');
+
+    function setEventThemeColor(theme) {
+      const selected = ['yellow', 'cream', 'purple', 'red', 'black'].includes(theme) ? theme : 'yellow';
+      document.getElementById('evt-theme').value = selected;
+      document.querySelectorAll('.evt-color-swatch').forEach(btn => {
+        const isMatch = btn.getAttribute('data-evt-color') === selected;
+        btn.classList.toggle('shadow-neo-black', isMatch);
+        btn.classList.toggle('-translate-y-1', isMatch);
+        btn.classList.toggle('ring-2', isMatch);
+        btn.classList.toggle('ring-black', isMatch);
+        btn.classList.toggle('opacity-70', !isMatch);
+      });
+    }
+
+    document.getElementById('evt-color-picker')?.addEventListener('click', (e) => {
+      const swatch = e.target.closest('[data-evt-color]');
+      if (swatch) {
+        setEventThemeColor(swatch.getAttribute('data-evt-color'));
+      }
+    });
+
+    function openEventModal(evt = null) {
+      document.getElementById('event-modal-title').textContent = evt ? 'MODIFIER L\'ÉVÉNEMENT' : 'AJOUTER UN ÉVÉNEMENT';
+      document.getElementById('evt-id').value = evt ? evt.id : '';
+      document.getElementById('evt-day').value = evt ? evt.day : '';
+      document.getElementById('evt-month').value = evt ? evt.month : '';
+      document.getElementById('evt-category').value = evt ? evt.category : 'tech';
+      document.getElementById('evt-title').value = evt ? evt.title : '';
+      document.getElementById('evt-description').value = evt ? evt.description : '';
+      document.getElementById('evt-badge1').value = evt ? evt.badge1 : 'TECH / DEV';
+      document.getElementById('evt-badge2').value = evt ? evt.badge2 : '';
+      document.getElementById('evt-location').value = evt ? evt.location : '';
+      document.getElementById('evt-time').value = evt ? evt.time : '';
+      document.getElementById('evt-price').value = evt ? evt.price : 'Gratuit';
+      document.getElementById('evt-slots').value = evt ? evt.slots : 'Illimité';
+      setEventThemeColor(evt ? evt.theme : 'yellow');
+      document.getElementById('evt-cta').value = evt ? evt.ctaText : 'RÉSERVER MA PLACE →';
+      eventModal.classList.remove('hidden');
+      eventModal.classList.add('flex');
+    }
+
+    function closeEventModal() {
+      eventModal.classList.add('hidden');
+      eventModal.classList.remove('flex');
+    }
+
+    const crewDropzone = document.getElementById('crew-dropzone');
+    const crewFileInput = document.getElementById('crew-file-input');
+    const crewDropzoneEmpty = document.getElementById('crew-dropzone-empty');
+    const crewDropzonePreview = document.getElementById('crew-dropzone-preview');
+    const crewPreviewImg = document.getElementById('crew-preview-img');
+    const crewClearPhotoBtn = document.getElementById('crew-clear-photo');
+
+    function setCrewPhotoValue(dataUrl) {
+      const val = dataUrl || '';
+      document.getElementById('crew-avatar-url').value = val;
+      if (val) {
+        crewPreviewImg.src = val;
+        crewDropzoneEmpty?.classList.add('hidden');
+        crewDropzonePreview?.classList.remove('hidden');
+      } else {
+        crewPreviewImg.src = '';
+        crewDropzoneEmpty?.classList.remove('hidden');
+        crewDropzonePreview?.classList.add('hidden');
+        if (crewFileInput) crewFileInput.value = '';
+      }
+    }
+
+    function handleCrewImageFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        showToast('Veuillez déposer un fichier image valide (PNG, JPG, WEBP).', true);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 600;
+          let { width, height } = img;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/webp', 0.85);
+          setCrewPhotoValue(compressedDataUrl);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    crewDropzone?.addEventListener('click', (e) => {
+      if (e.target.closest('#crew-clear-photo')) return;
+      crewFileInput?.click();
+    });
+
+    crewFileInput?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) handleCrewImageFile(file);
+    });
+
+    crewDropzone?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      crewDropzone.classList.add('bg-bde-cream', 'border-solid');
+    });
+
+    crewDropzone?.addEventListener('dragleave', () => {
+      crewDropzone.classList.remove('bg-bde-cream', 'border-solid');
+    });
+
+    crewDropzone?.addEventListener('drop', (e) => {
+      e.preventDefault();
+      crewDropzone.classList.remove('bg-bde-cream', 'border-solid');
+      const file = e.dataTransfer?.files?.[0];
+      if (file) handleCrewImageFile(file);
+    });
+
+    crewClearPhotoBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setCrewPhotoValue('');
+    });
+
+    function openCrewModal(member = null) {
+      document.getElementById('crew-modal-title').textContent = member ? 'MODIFIER UN MEMBRE BDE' : 'AJOUTER UN MEMBRE BDE';
+      document.getElementById('crew-id').value = member ? member.id : '';
+      document.getElementById('crew-login').value = member ? (member.login || '') : '';
+      document.getElementById('crew-role').value = member ? member.role : 'MEMBRE BDE // LVL.80';
+      document.getElementById('crew-name').value = member ? member.name : '';
+      document.getElementById('crew-quote').value = member ? member.quote : '';
+      document.getElementById('crew-stack').value = member ? member.stack : '';
+      document.getElementById('crew-avatar-type').value = member ? (member.avatarType || 'bot') : 'bot';
+      document.getElementById('crew-theme').value = member ? (member.theme || 'purple') : 'purple';
+      setCrewPhotoValue(member ? (member.avatarUrl || '') : '');
+      crewModal.classList.remove('hidden');
+      crewModal.classList.add('flex');
+    }
+
+    function closeCrewModal() {
+      crewModal.classList.add('hidden');
+      crewModal.classList.remove('flex');
+    }
+
+    const eventLogsModal = document.getElementById('event-logs-modal');
+    let currentLogsFilterEventId = null;
+
+    function openEventLogsModal(filterEventId = null) {
+      currentLogsFilterEventId = filterEventId;
+      const listEl = document.getElementById('event-logs-list');
+      const titleEl = document.getElementById('event-logs-modal-title');
+      if (!listEl || !eventLogsModal) return;
+
+      const evt = filterEventId ? eventsData.find(x => x.id === filterEventId) : null;
+      if (titleEl) {
+        titleEl.textContent = evt ? `LOGS : ${evt.title}` : 'JOURNAL DES CLICS ÉVÉNEMENTS';
+      }
+
+      const logs = filterEventId
+        ? eventLogsData.filter(l => l.eventId === filterEventId)
+        : eventLogsData;
+
+      if (logs.length === 0) {
+        listEl.innerHTML = `<div class="p-4 border border-bde-cream/30 text-bde-cream/60 text-center">Aucun inscrit enregistré pour le moment.</div>`;
+      } else {
+        listEl.innerHTML = logs.map(log => {
+          const dateStr = new Date(log.clickedAt).toLocaleString('fr-FR');
+          return `
+            <div class="flex items-center justify-between gap-3 bg-bde-purple/40 border border-bde-yellow/50 p-3">
+              <div class="flex items-center gap-3">
+                ${log.avatarUrl
+                  ? `<img src="${escapeHtml(log.avatarUrl)}" alt="" class="w-8 h-8 rounded-full border border-bde-yellow object-cover shrink-0">`
+                  : `<div class="w-8 h-8 rounded-full bg-bde-yellow text-black font-black flex items-center justify-center border border-black shrink-0">${escapeHtml((log.login || '?')[0].toUpperCase())}</div>`
+                }
+                <div>
+                  <div class="font-bold text-bde-yellow">@${escapeHtml(log.login)} <span class="text-bde-cream/80 font-normal">(${escapeHtml(log.displayName)})</span></div>
+                  <div class="text-[11px] text-bde-cream">→ <span class="font-bold">${escapeHtml(log.eventTitle)}</span></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <div class="text-[10px] text-bde-cream/70 whitespace-nowrap">${escapeHtml(dateStr)}</div>
+                <button type="button" data-remove-reg-event="${escapeHtml(log.eventId)}" data-remove-reg-login="${escapeHtml(log.login)}" class="bg-bde-red text-bde-cream font-mono font-black text-[10px] px-2 py-1 border border-black hover:bg-bde-yellow hover:text-black" title="Désinscrire cet étudiant">
+                  ✕ RETIRER
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      eventLogsModal.classList.remove('hidden');
+      eventLogsModal.classList.add('flex');
+    }
+
+    document.getElementById('event-logs-list')?.addEventListener('click', async (e) => {
+      const removeBtn = e.target.closest('[data-remove-reg-event]');
+      if (!removeBtn) return;
+
+      const eventId = removeBtn.getAttribute('data-remove-reg-event');
+      const login = removeBtn.getAttribute('data-remove-reg-login');
+      if (!eventId || !login) return;
+
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/events/${encodeURIComponent(eventId)}/registrations/${encodeURIComponent(login)}`,
+          {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          }
+        );
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Impossible de retirer cet inscrit');
+        if (Array.isArray(data.events)) eventsData = data.events;
+        if (Array.isArray(data.eventLogs)) eventLogsData = data.eventLogs;
+        renderEvents();
+        openEventLogsModal(currentLogsFilterEventId);
+        showToast(`@${login} a été retiré des inscrits.`);
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+
+    function closeEventLogsModal() {
+      eventLogsModal?.classList.add('hidden');
+      eventLogsModal?.classList.remove('flex');
+    }
+
+    document.getElementById('add-event-btn')?.addEventListener('click', () => openEventModal());
+    document.getElementById('close-event-modal')?.addEventListener('click', closeEventModal);
+    document.getElementById('view-event-logs-btn')?.addEventListener('click', () => openEventLogsModal(null));
+    document.getElementById('close-event-logs-modal')?.addEventListener('click', closeEventLogsModal);
+    document.getElementById('add-crew-btn')?.addEventListener('click', () => openCrewModal());
+    document.getElementById('close-crew-modal')?.addEventListener('click', closeCrewModal);
+
+    async function registerForEvent(id) {
+      if (!currentUser) {
+        localStorage.setItem('bde_pending_event_click', id);
+        showToast('Connexion 42 requise pour s\'inscrire — redirection vers 42 Intra...');
+        await start42Login();
+        return;
+      }
+      try {
+        const res = await fetch(`${API_BASE}/api/events/${encodeURIComponent(id)}/click`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        const data = await res.json();
+        if (res.status === 401) {
+          localStorage.setItem('bde_pending_event_click', id);
+          showToast('Session expirée — redirection vers 42 Intra pour vous inscrire...');
+          await start42Login();
+          return;
+        }
+        if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'enregistrement de l\'inscription');
+        if (Array.isArray(data.events)) eventsData = data.events;
+        if (Array.isArray(data.eventLogs)) eventLogsData = data.eventLogs;
+        renderEvents();
+        showToast(`✓ Inscription enregistrée (@${currentUser.login}) pour "${data.event.title}" !`);
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    document.getElementById('events-grid')?.addEventListener('click', async (e) => {
+      const editBtn = e.target.closest('[data-edit-event]');
+      const deleteBtn = e.target.closest('[data-delete-event]');
+      const logsBtn = e.target.closest('[data-logs-event]');
+      const clickBtn = e.target.closest('[data-click-event]');
+
+      if (logsBtn) {
+        const id = logsBtn.getAttribute('data-logs-event');
+        openEventLogsModal(id);
+      } else if (editBtn) {
+        const id = editBtn.getAttribute('data-edit-event');
+        const evt = eventsData.find(x => x.id === id);
+        if (evt) openEventModal(evt);
+      } else if (deleteBtn) {
+        const id = deleteBtn.getAttribute('data-delete-event');
+        try {
+          const res = await fetch(`${API_BASE}/api/events/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Suppression refusée');
+          eventsData = data.events;
+          renderEvents();
+          showToast('Événement supprimé.');
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      } else if (clickBtn) {
+        const id = clickBtn.getAttribute('data-click-event');
+        await registerForEvent(id);
+      }
+    });
+
+    document.getElementById('crew-grid')?.addEventListener('click', async (e) => {
+      const editBtn = e.target.closest('[data-edit-crew]');
+      const deleteBtn = e.target.closest('[data-delete-crew]');
+
+      if (editBtn) {
+        const id = editBtn.getAttribute('data-edit-crew');
+        const member = crewData.find(x => x.id === id);
+        if (member) openCrewModal(member);
+      } else if (deleteBtn) {
+        const id = deleteBtn.getAttribute('data-delete-crew');
+        try {
+          const res = await fetch(`${API_BASE}/api/crew/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Suppression refusée');
+          crewData = data.crew;
+          renderCrew();
+          showToast('Membre BDE supprimé.');
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      }
+    });
+
+    eventAdminForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('evt-id').value;
+      const payload = {
+        day: document.getElementById('evt-day').value,
+        month: document.getElementById('evt-month').value,
+        category: document.getElementById('evt-category').value,
+        title: document.getElementById('evt-title').value,
+        description: document.getElementById('evt-description').value,
+        badge1: document.getElementById('evt-badge1').value,
+        badge2: document.getElementById('evt-badge2').value,
+        location: document.getElementById('evt-location').value,
+        time: document.getElementById('evt-time').value,
+        price: document.getElementById('evt-price').value,
+        slots: document.getElementById('evt-slots').value,
+        theme: document.getElementById('evt-theme').value,
+        ctaText: document.getElementById('evt-cta').value,
+      };
+
+      try {
+        const url = id ? `${API_BASE}/api/events/${encodeURIComponent(id)}` : `${API_BASE}/api/events`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method,
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur lors de la sauvegarde');
+        eventsData = data.events;
+        renderEvents();
+        closeEventModal();
+        showToast(id ? 'Événement mis à jour !' : 'Nouvel événement ajouté !');
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+
+    crewAdminForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('crew-id').value;
+      const payload = {
+        login: document.getElementById('crew-login').value,
+        role: document.getElementById('crew-role').value,
+        name: document.getElementById('crew-name').value,
+        quote: document.getElementById('crew-quote').value,
+        stack: document.getElementById('crew-stack').value,
+        avatarType: document.getElementById('crew-avatar-type').value,
+        theme: document.getElementById('crew-theme').value,
+        avatarUrl: document.getElementById('crew-avatar-url').value,
+      };
+
+      try {
+        const url = id ? `${API_BASE}/api/crew/${encodeURIComponent(id)}` : `${API_BASE}/api/crew`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+          method,
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur lors de la sauvegarde');
+        crewData = data.crew;
+        renderCrew();
+        if (!id) {
+          const grid = document.getElementById('crew-grid');
+          if (grid) {
+            requestAnimationFrame(() => grid.scrollTo({ left: grid.scrollWidth, behavior: 'smooth' }));
+          }
+        }
+        closeCrewModal();
+        showToast(id ? 'Membre BDE mis à jour !' : 'Nouveau membre BDE ajouté !');
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+
+    // ====================================================
+    // BOÎTE À IDÉES & PR HANDLERS
+    // ====================================================
+    const ideaForm = document.getElementById('idea-form');
+    const ideasListEl = document.getElementById('ideas-list');
+
+    ideaForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        showToast('Connexion 42 requise pour soumettre une proposition — redirection vers 42 Intra...');
+        await start42Login();
+        return;
+      }
+
+      const payload = {
+        title: document.getElementById('idea-title')?.value || '',
+        category: document.getElementById('idea-category')?.value || 'CAMPUS',
+        description: document.getElementById('idea-description')?.value || '',
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/ideas`, {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur lors de l\'envoi de la proposition');
+        if (Array.isArray(data.ideas)) ideasData = data.ideas;
+        renderIdeas();
+        ideaForm.reset();
+        showToast('✓ Votre proposition a été ajoutée à la Boîte à Idées !');
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    });
+
+    ideasListEl?.addEventListener('click', async (e) => {
+      const voteBtn = e.target.closest('[data-vote-idea]');
+      const deleteBtn = e.target.closest('[data-delete-idea]');
+
+      if (voteBtn) {
+        if (!currentUser) {
+          showToast('Connexion 42 requise pour voter — redirection vers 42 Intra...');
+          await start42Login();
+          return;
+        }
+        const id = voteBtn.getAttribute('data-vote-idea');
+        try {
+          const res = await fetch(`${API_BASE}/api/ideas/${encodeURIComponent(id)}/vote`, {
+            method: 'POST',
+            headers: getAuthHeaders()
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Impossible de voter');
+          if (Array.isArray(data.ideas)) ideasData = data.ideas;
+          renderIdeas();
+          showToast('▲ Vote pris en compte !');
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      } else if (deleteBtn) {
+        const id = deleteBtn.getAttribute('data-delete-idea');
+        try {
+          const res = await fetch(`${API_BASE}/api/ideas/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Suppression refusée');
+          if (Array.isArray(data.ideas)) ideasData = data.ideas;
+          renderIdeas();
+          showToast('Proposition supprimée.');
+        } catch (err) {
+          showToast(err.message, true);
+        }
+      }
+    });
+
+    // ====================================================
+    // TERMINAL INTERACTIVE SHELL (LIVE DATA)
+    // ====================================================
+    const terminalForm = document.getElementById('terminal-form');
+    const terminalInput = document.getElementById('terminal-input');
+    const terminalHistory = document.getElementById('terminal-history');
+    const terminalBody = document.getElementById('terminal-body');
+    const cmdHistory = [];
+    let historyIndex = -1;
+
+    const terminalCommands = {
+      help: () => `
+        <div class="text-bde-cream space-y-1">
+          <div class="text-bde-yellow font-bold">// COMMANDES DISPONIBLES :</div>
+          <div><span class="text-bde-yellow font-bold">events</span>   - Afficher les prochains événements du campus</div>
+          <div><span class="text-bde-yellow font-bold">bureau</span>   - Lister les membres du bureau ROOT_OVERFLOW</div>
+          <div><span class="text-bde-yellow font-bold">piliers</span>  - Voir les 4 piliers fondateurs du BDE</div>
+          <div><span class="text-bde-yellow font-bold">idees</span>    - Consulter les PRs & idées les plus votées</div>
+          <div><span class="text-bde-yellow font-bold">sandwich</span> - État du service Sandwicherie</div>
+          <div><span class="text-bde-yellow font-bold">contact</span>  - Infos local & serveur Discord</div>
+          <div><span class="text-bde-yellow font-bold">whoami</span>   - Afficher la session 42 active</div>
+          <div><span class="text-bde-yellow font-bold">login</span>    - Se connecter via 42 Intra OAuth</div>
+          <div><span class="text-bde-yellow font-bold">clear</span>    - Nettoyer le terminal</div>
+        </div>`,
+      events: () => `
+        <div class="text-bde-cream space-y-1">
+          <div class="text-bde-yellow font-bold">// AGENDA TEMPS RÉEL (${eventsData.length}) :</div>
+          ${eventsData.map(e => `<div>• <span class="text-bde-yellow">[${escapeHtml(e.day)} ${escapeHtml(e.month)}]</span> ${escapeHtml(e.title)} (${escapeHtml(e.location)} - ${escapeHtml(e.price)})</div>`).join('')}
+        </div>`,
+      bureau: () => `
+        <div class="text-bde-cream space-y-1">
+          <div class="text-bde-yellow font-bold">// CREW_MANIFEST ROOT_OVERFLOW (${crewData.length}) :</div>
+          ${crewData.map(m => `<div>• <span class="text-bde-yellow font-bold">${escapeHtml(m.name)}</span> ${m.login ? `<span class="text-bde-red">(@${escapeHtml(m.login)})</span>` : ''} — ${escapeHtml(m.role)} (${escapeHtml(m.stack)})</div>`).join('')}
+        </div>`,
+      piliers: () => `
+        <div class="text-bde-cream space-y-1">
+          <div class="text-bde-yellow font-bold">// LES 4 PILIERS DU BUREAU :</div>
+          <div><span class="text-bde-yellow">#01</span> HACKATHONS DE L'EXTRÊME (48h non-stop, 5000€ cashprize/semestre)</div>
+          <div><span class="text-bde-yellow">#02</span> NUITS & SOIRÉES POST-RELEASE (After-works hebdo & bars privatisés)</div>
+          <div><span class="text-bde-yellow">#03</span> E-SPORT & LAN PARTIES (Serveurs dédiés & tournois en amphi)</div>
+          <div><span class="text-bde-yellow">#04</span> ENTRAIDE & DÉFENSE DES DROITS (Tutorat, prêt matos, solidarité)</div>
+        </div>`,
+      idees: () => `
+        <div class="text-bde-cream space-y-1">
+          <div class="text-bde-yellow font-bold">// TOP PULL REQUESTS ÉTUDIANTES (${ideasData.length}) :</div>
+          ${ideasData.map(i => `<div>▲ <span class="text-bde-yellow font-bold">${escapeHtml(i.votes ?? 0)}</span> — ${escapeHtml(i.title)} [${escapeHtml(i.category)}] ${i.authorLogin ? `<span class="text-bde-red">(@${escapeHtml(i.authorLogin)})</span>` : ''}</div>`).join('')}
+        </div>`,
+      sandwich: () => `
+        <div class="text-bde-cream">
+          <span class="text-red-400 font-bold">● SANDWICHERIE : CLOSE</span> — Prochain service à 12h00 au local S404.
+        </div>`,
+      contact: () => `
+        <div class="text-bde-cream space-y-1">
+          <div>📍 <span class="text-bde-yellow font-bold">LOCAL :</span> Salle 404, Bâtiment Turing — Campus Perpignan</div>
+          <div>💬 <span class="text-bde-yellow font-bold">DISCORD :</span> 1,420 devs en ligne</div>
+        </div>`,
+      whoami: () => currentUser
+        ? `<div class="text-bde-cream"><span class="text-bde-yellow font-bold">${escapeHtml(currentUser.login)}@root_overflow</span> — ${escapeHtml(currentUser.displayName)} // ${currentUser.isAdmin ? '<span class="text-bde-red font-bold">[BDE ADMIN]</span>' : 'Étudiant 42'}</div>`
+        : `<div class="text-bde-cream">guest@root_overflow — Non connecté (tapez <span class="text-bde-yellow font-bold">login</span> pour vous authentifier via 42)</div>`,
+      login: () => {
+        start42Login();
+        return `<div class="text-bde-yellow">Redirection vers l'authentification OAuth 42 Intra...</div>`;
+      },
+      sudo: () => currentUser && currentUser.isAdmin
+        ? `<div class="text-bde-yellow font-bold">[ROOT ACCESS GRANTED] Vous êtes connecté en tant qu'administrateur BDE (@${escapeHtml(currentUser.login)}). Utilisez les boutons + AJOUTER sur la page.</div>`
+        : `<div class="text-bde-red font-bold">[ALERTE SÉCURITÉ] Privilèges root refusés. Connectez-vous avec un compte 42 membre du BDE.</div>`
+    };
+
+    terminalCommands.agenda = terminalCommands.events;
+    terminalCommands.equipe = terminalCommands.bureau;
+    terminalCommands.team = terminalCommands.bureau;
+    terminalCommands.pr = terminalCommands.idees;
+    terminalCommands.sandwicherie = terminalCommands.sandwich;
+    terminalCommands.discord = terminalCommands.contact;
+
+    if (terminalBody && terminalInput) {
+      terminalBody.addEventListener('click', () => {
+        if (!window.getSelection().toString()) {
+          terminalInput.focus();
+        }
+      });
+    }
+
+    if (terminalForm && terminalInput && terminalHistory) {
+      terminalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const rawInput = terminalInput.value.trim();
+        terminalInput.value = '';
+
+        if (!rawInput) return;
+
+        cmdHistory.push(rawInput);
+        historyIndex = cmdHistory.length;
+
+        const args = rawInput.toLowerCase().split(/\s+/);
+        const cmd = args[0];
+
+        if (cmd === 'clear' || cmd === 'cls') {
+          terminalHistory.innerHTML = '';
+          return;
+        }
+
+        const entry = document.createElement('div');
+        entry.className = 'space-y-1';
+
+        let outputHtml = '';
+        if (cmd === 'sudo') {
+          outputHtml = terminalCommands.sudo();
+        } else if (terminalCommands[cmd]) {
+          outputHtml = terminalCommands[cmd]();
+        } else {
+          outputHtml = `<div class="text-bde-red">bash: ${escapeHtml(cmd)}: commande introuvable. Tapez <span class="text-bde-yellow font-bold">help</span> pour voir la liste.</div>`;
+        }
+
+        const promptUser = currentUser ? `${escapeHtml(currentUser.login)}@root:~$` : 'bde@root:~$';
+        entry.innerHTML = `
+          <div><span class="text-bde-yellow font-bold">${promptUser}</span> <span class="text-bde-cream">${escapeHtml(rawInput)}</span></div>
+          ${outputHtml}
+        `;
+
+        terminalHistory.appendChild(entry);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+      });
+
+      terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (historyIndex > 0) {
+            historyIndex--;
+            terminalInput.value = cmdHistory[historyIndex];
+          }
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (historyIndex < cmdHistory.length - 1) {
+            historyIndex++;
+            terminalInput.value = cmdHistory[historyIndex];
+          } else {
+            historyIndex = cmdHistory.length;
+            terminalInput.value = '';
+          }
+        }
+      });
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
