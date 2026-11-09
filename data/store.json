@@ -15,7 +15,14 @@
       "slots": "Illimité",
       "ctaText": "RÉSERVER MA PLACE →",
       "theme": "purple",
-      "registrations": []
+      "registrations": [
+        {
+          "login": "shapetit",
+          "displayName": "Shawn Petitjean",
+          "avatarUrl": "https://cdn.intra.42.fr/users/5d8830f61ed00bfdae279d4a569e0829/shapetit.jpg",
+          "clickedAt": "2026-11-09T10:29:36.982Z"
+        }
+      ]
     }
   ],
   "crew": [
@@ -64,17 +71,25 @@
       "theme": "black"
     }
   ],
-  "eventLogs": [],
+  "eventLogs": [
+    {
+      "id": "log-1794220176982-91t9",
+      "eventId": "evt-1794175668566",
+      "eventTitle": "Arena Soirée",
+      "login": "shapetit",
+      "displayName": "Shawn Petitjean",
+      "avatarUrl": "https://cdn.intra.42.fr/users/5d8830f61ed00bfdae279d4a569e0829/shapetit.jpg",
+      "clickedAt": "2026-11-09T10:29:36.982Z"
+    }
+  ],
   "ideas": [
     {
       "id": "idea-1",
       "title": "Machine à café illimitée",
       "category": "CAMPUS",
       "description": "Remplacer la machine par un broyeur professionnel en accès libre.",
-      "votes": 143,
-      "voters": [
-        "shapetit"
-      ],
+      "votes": 142,
+      "voters": [],
       "authorLogin": "kernel",
       "authorName": "BDE Seed",
       "createdAt": "2026-11-08T18:00:00.000Z",
@@ -85,10 +100,8 @@
       "title": "Cluster Kubernetes dédié",
       "category": "TECH",
       "description": "Mettre à disposition un serveur bare-metal pour les APIs.",
-      "votes": 99,
-      "voters": [
-        "shapetit"
-      ],
+      "votes": 98,
+      "voters": [],
       "authorLogin": "debug",
       "authorName": "BDE Seed",
       "createdAt": "2026-11-08T18:05:00.000Z",

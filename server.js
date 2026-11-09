@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5001;
 const publicAppUrl = (process.env.PUBLIC_APP_URL || `http://localhost:${PORT}`).trim().replace(/\/+$/, '');
 
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '2mb' }));
 
 // ----------------------------------------------------
 // JSON DATA STORE (Events & BDE Crew)
@@ -25,25 +25,36 @@ const DATA_FILE = path.join(__dirname, 'data', 'store.json');
 const CLICK_LOG_FILE = path.join(__dirname, 'data', 'event_clicks.log');
 const IDEAS_LOG_FILE = path.join(__dirname, 'data', 'ideas.log');
 
+const EMPTY_STORE = () => ({ events: [], crew: [], eventLogs: [], ideas: [] });
+let storeCache = null; // { mtimeMs, data }
+
 function readStore() {
   try {
-    const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return {
+    const { mtimeMs } = fs.statSync(DATA_FILE);
+    if (storeCache && storeCache.mtimeMs === mtimeMs) return storeCache.data;
+    const parsed = JSON.parse(fs.readFileSync(DATA_FILE, 'utf-8'));
+    const data = {
       events: Array.isArray(parsed.events) ? parsed.events : [],
       crew: Array.isArray(parsed.crew) ? parsed.crew : [],
       eventLogs: Array.isArray(parsed.eventLogs) ? parsed.eventLogs : [],
       ideas: Array.isArray(parsed.ideas) ? parsed.ideas : [],
     };
+    storeCache = { mtimeMs, data };
+    return data;
   } catch (err) {
-    console.error('Failed to read store.json:', err.message);
-    return { events: [], crew: [], eventLogs: [], ideas: [] };
+    storeCache = null;
+    if (err.code !== 'ENOENT') console.error('Failed to read store.json:', err.message);
+    return EMPTY_STORE();
   }
 }
 
 function writeStore(store) {
   fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2), 'utf-8');
+  // Atomic write: avoids a corrupted store.json if the process dies mid-write
+  const tmp = `${DATA_FILE}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(store, null, 2), 'utf-8');
+  fs.renameSync(tmp, DATA_FILE);
+  storeCache = { mtimeMs: fs.statSync(DATA_FILE).mtimeMs, data: store };
 }
 
 function appendClickLogFile(entry) {
@@ -98,9 +109,13 @@ function createSession(user) {
   return token;
 }
 
-function getUserFromReq(req) {
+function getBearerToken(req) {
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  return authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+}
+
+function getUserFromReq(req) {
+  const token = getBearerToken(req);
   if (!token) return null;
   const entry = sessions.get(token);
   if (!entry) return null;
@@ -139,6 +154,13 @@ function issueOauthState() {
   oauthStates.set(state, Date.now() + OAUTH_STATE_TTL_MS);
   return state;
 }
+
+// Periodically purge expired sessions / OAuth states so the Maps don't grow forever
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, v] of sessions) if (v.expiresAt < now) sessions.delete(k);
+  for (const [k, exp] of oauthStates) if (exp < now) oauthStates.delete(k);
+}, 10 * 60 * 1000).unref();
 
 function consumeOauthState(state) {
   const exp = oauthStates.get(state);
@@ -259,8 +281,7 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  const token = getBearerToken(req);
   if (token) sessions.delete(token);
   res.json({ ok: true });
 });
@@ -386,7 +407,19 @@ app.post('/api/events/:id/click', requireAuth, (req, res) => {
     r => (r.login || '').toLowerCase() === login.toLowerCase()
   );
   if (alreadyRegistered) {
-    return res.status(409).json({ error: 'Vous êtes déjà inscrit à cet événement.' });
+    // Second click: cancel the registration
+    const me = login.toLowerCase();
+    evt.registrations = evt.registrations.filter(r => (r.login || '').toLowerCase() !== me);
+    store.eventLogs = store.eventLogs.filter(
+      l => !(l.eventId === evt.id && (l.login || '').toLowerCase() === me)
+    );
+    writeStore(store);
+    return res.json({
+      registered: false,
+      event: evt,
+      events: store.events,
+      eventLogs: store.eventLogs,
+    });
   }
 
   const clickedAt = new Date().toISOString();
@@ -415,6 +448,7 @@ app.post('/api/events/:id/click', requireAuth, (req, res) => {
   appendClickLogFile(logEntry);
 
   res.status(201).json({
+    registered: true,
     logEntry,
     event: evt,
     events: store.events,
@@ -579,16 +613,20 @@ app.post('/api/ideas/:id/vote', requireAuth, (req, res) => {
     idea.voters = [];
   }
 
+  let voted;
   if (idea.voters.includes(login)) {
-    return res.status(409).json({ error: 'Vous avez déjà voté pour cette proposition.' });
+    idea.voters = idea.voters.filter(v => v !== login);
+    idea.votes = Math.max(0, (Number(idea.votes) || 0) - 1);
+    voted = false;
+  } else {
+    idea.voters.push(login);
+    idea.votes = (Number(idea.votes) || 0) + 1;
+    voted = true;
   }
-
-  idea.voters.push(login);
-  idea.votes = (Number(idea.votes) || 0) + 1;
   store.ideas.sort((a, b) => (b.votes || 0) - (a.votes || 0));
 
   writeStore(store);
-  res.json({ idea, ideas: store.ideas });
+  res.json({ idea, ideas: store.ideas, voted });
 });
 
 app.delete('/api/ideas/:id', requireAdmin, (req, res) => {
@@ -610,7 +648,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'maquette_bde.html'));
 });
 
-app.use(express.static(__dirname));
+// Only expose public assets (never server.js, data/ or package files)
+app.get('/logo_bde.svg', (req, res) => res.sendFile(path.join(__dirname, 'logo_bde.svg')));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), { maxAge: '7d' }));
 
 app.listen(PORT, () => {
   console.log(`🚀 BDE ROOT_OVERFLOW Server running at ${publicAppUrl}`);

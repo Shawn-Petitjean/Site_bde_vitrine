@@ -38,6 +38,7 @@
             'neo-yellow-lg': '8px 8px 0px 0px #e1b70a',
             'neo-red-lg': '8px 8px 0px 0px #C60800',
             'neo-cream-lg': '8px 8px 0px 0px #FFF1B8',
+            'neo-purple-lg': '8px 8px 0px 0px #2e006c',
           }
         }
       }
@@ -349,7 +350,7 @@
 
       <!-- Terminal Shell -->
       <div class="max-w-4xl mx-auto w-full" id="terminal">
-        <div class="bg-black border-[3.5px] border-black shadow-neo-yellow-lg overflow-hidden">
+        <div class="bg-black border-[3.5px] border-black shadow-neo-purple-lg overflow-hidden">
           
           <div class="bg-bde-cream px-4 py-2.5 border-b-[3px] border-black flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -389,16 +390,16 @@
 
   <!-- ================= SECTION 1: 4 PILIERS (Fond VIOLET) ================= -->
   <section id="piliers" class="w-full bg-gradient-to-b from-[#150033] to-[#100028] py-20 border-b-[4px] border-black relative overflow-hidden">
-    <img src="assets/dots_y.png" alt="" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
+    <img src="assets/dots_y.png" alt="" loading="lazy" decoding="async" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
         <div class="relative z-10 max-w-7xl mx-auto px-4">
       <div class="mb-14 text-bde-cream">
           <div class="flex items-center gap-2 font-mono uppercase text-xs tracking-widest mb-2 font-bold text-bde-yellow">
             <span>// PROTOCOLE_FONDATEUR</span>
-            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+            <img src="assets/chevrons_y.png" alt="" loading="lazy" decoding="async" class="h-3 w-auto">
           </div>
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
-            LES 4 PILIERS DU BUREAU<img src="assets/star8_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
+            LES 4 PILIERS DU BUREAU<img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
           </h2>
         <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
           Pas de fausses promesses. 4 missions concrètes faites pour améliorer la vie étudiante et votre année.
@@ -491,17 +492,17 @@
 
   <!-- ================= SECTION 2: ÉVÉNEMENTS (Fond ROUGE) ================= -->
   <section id="events" class="w-full bg-[#FFF1B8] py-20 border-b-[4px] border-black relative overflow-hidden">
-    <img src="assets/target_p.png" alt="" class="deco hidden lg:block w-24 top-2 -left-8 opacity-10">
+    <img src="assets/target_p.png" alt="" loading="lazy" decoding="async" class="deco hidden lg:block w-24 top-2 -left-8 opacity-10">
         <div class="relative z-10 max-w-7xl mx-auto px-4">
       
       <div class="mb-12 text-black">
           <div class="flex items-center gap-2 font-mono text-bde-purple uppercase text-xs tracking-widest mb-2 font-bold">
             <span>// CALENDRIER_TEMPS_RÉEL</span>
-            <img src="assets/chevrons_p.png" alt="" class="h-3 w-auto">
+            <img src="assets/chevrons_p.png" alt="" loading="lazy" decoding="async" class="h-3 w-auto">
           </div>
         <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
           <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
-            ÉVÉNEMENTS À VENIR<img src="assets/sparkles_p.png" alt="" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
+            ÉVÉNEMENTS À VENIR<img src="assets/sparkles_p.png" alt="" loading="lazy" decoding="async" class="inline-block h-[0.8em] w-auto ml-3 align-[-0.05em] select-none pointer-events-none">
           </h2>
         <div class="flex flex-wrap items-center gap-2 font-mono text-xs uppercase" id="event-filters">
           <button data-filter="all" class="filter-btn active bg-bde-yellow text-black font-bold px-4 py-2 border-2 border-black shadow-neo-black">
@@ -527,135 +528,37 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="events-grid">
-        
-        <div class="event-card card-neo bg-bde-yellow border-2 border-black p-6 shadow-neo-black flex flex-col justify-between" data-category="tech">
-          <div>
-            <div class="flex items-start justify-between gap-4 mb-4">
-              <div class="bg-black text-bde-cream font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
-                <span class="text-2xl block">12</span><span class="text-xs uppercase">NOV</span>
-              </div>
-              <div class="flex flex-wrap gap-2 justify-end">
-                <span class="bg-bde-purple text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">TECH / DEV</span>
-                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black animate-pulse">PLACES LIMITÉES</span>
-              </div>
-            </div>
-            <h3 class="font-syne font-black text-2xl uppercase text-black mb-2">HACKATHON : PROMPT ENGINE 48H</h3>
-            <p class="font-space text-black/80 font-bold text-sm mb-6">
-              Développez des agents autonomes et des applications IA sans dormir. RedBull à volonté et jury d'experts.
-            </p>
-            <div class="space-y-2 font-mono text-xs mb-6 text-black bg-white/40 p-3 border border-black/30 font-bold">
-              <div class="flex justify-between"><span>📍 LIEU : Grand Amphi Tech</span><span>⏰ 20:00 - DIM 20:00</span></div>
-              <div class="flex justify-between"><span>🎟️ TARIF : Gratuit</span><span class="text-bde-purple">PLACES : 68 / 80</span></div>
-            </div>
-          </div>
-          <button class="btn-neo w-full bg-black text-bde-yellow font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-cream text-center">
-            RÉSERVER MA PLACE →
-          </button>
-        </div>
-
-        <div class="event-card card-neo bg-bde-cream border-2 border-black p-6 shadow-neo-black flex flex-col justify-between" data-category="party">
-          <div>
-            <div class="flex items-start justify-between gap-4 mb-4">
-              <div class="bg-bde-red text-bde-cream font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
-                <span class="text-2xl block">21</span><span class="text-xs uppercase">NOV</span>
-              </div>
-              <div class="flex flex-wrap gap-2 justify-end">
-                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">SOIRÉE OFFICIELLE</span>
-                <span class="bg-bde-purple text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">SHOTS INCLUS</span>
-              </div>
-            </div>
-            <h3 class="font-syne font-black text-2xl uppercase text-black mb-2">SOIRÉE SUDO_NIGHT : WAREHOUSE</h3>
-            <p class="font-space text-black/80 font-bold text-sm mb-6">
-              Privatisation d'un hangar de 1000m² avec soundsystem Funktion-One. Line-up de 5 DJs étudiants, lasers.
-            </p>
-            <div class="space-y-2 font-mono text-xs mb-6 text-black bg-white/50 p-3 border border-black/30 font-bold">
-              <div class="flex justify-between"><span>📍 LIEU : Club Le RedRoom</span><span>⏰ 23:00 - 05:30</span></div>
-              <div class="flex justify-between"><span>🎟️ TARIF : 8€ / 14€ Ext</span><span class="text-bde-red">PLACES : 280 / 350</span></div>
-            </div>
-          </div>
-          <button class="btn-neo w-full bg-bde-purple text-bde-cream font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-yellow text-center">
-            PRENDRE MON BILLET →
-          </button>
-        </div>
-
-        <div class="event-card card-neo bg-bde-purple border-2 border-black p-6 shadow-neo-yellow flex flex-col justify-between" data-category="gaming">
-          <div>
-            <div class="flex items-start justify-between gap-4 mb-4">
-              <div class="bg-bde-yellow text-black font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
-                <span class="text-2xl block">05</span><span class="text-xs uppercase">DÉC</span>
-              </div>
-              <div class="flex flex-wrap gap-2 justify-end">
-                <span class="bg-bde-cream text-black font-mono text-xs px-2.5 py-1 font-bold border border-black">E-SPORT ARENA</span>
-              </div>
-            </div>
-            <h3 class="font-syne font-black text-2xl uppercase text-bde-cream mb-2">TOURNOI SMASH BROS ULTIMATE & CS2</h3>
-            <p class="font-space text-bde-cream/90 text-sm mb-6 font-semibold">
-              Tournoi officiel homologué. Écrans 240Hz, setup streaming avec casters live et cashprize de 800€.
-            </p>
-            <div class="space-y-2 font-mono text-xs mb-6 text-bde-cream bg-black/20 p-3 border border-black/30">
-              <div class="flex justify-between"><span>📍 LIEU : Salle Réseau S102</span><span>⏰ 14:00 - 22:00</span></div>
-              <div class="flex justify-between"><span>🎟️ TARIF : 2€ d'inscription</span><span class="text-bde-yellow font-bold">SLOTS : 32 / 64</span></div>
-            </div>
-          </div>
-          <button class="btn-neo w-full bg-bde-yellow text-black font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-cream text-center">
-            INSCRIRE MON ÉQUIPE →
-          </button>
-        </div>
-
-        <div class="event-card card-neo bg-black border-2 border-black p-6 shadow-neo-cream flex flex-col justify-between" data-category="tech">
-          <div>
-            <div class="flex items-start justify-between gap-4 mb-4">
-              <div class="bg-bde-cream text-black font-mono font-black text-center px-4 py-2 border-2 border-black leading-none">
-                <span class="text-2xl block">14</span><span class="text-xs uppercase">DÉC</span>
-              </div>
-              <div class="flex flex-wrap gap-2 justify-end">
-                <span class="bg-bde-red text-bde-cream font-mono text-xs px-2.5 py-1 font-bold border border-black">WORKSHOP</span>
-              </div>
-            </div>
-            <h3 class="font-syne font-black text-2xl uppercase text-bde-cream mb-2">WORKSHOP : RUST, KERNEL & EXPLOIT</h3>
-            <p class="font-space text-bde-cream/80 text-sm mb-6">
-              Atelier intensif animé par des alumni de chez Datadog et Ledger. Conception de drivers.
-            </p>
-            <div class="space-y-2 font-mono text-xs mb-6 text-bde-cream bg-white/10 p-3 border border-bde-cream/30">
-              <div class="flex justify-between"><span>📍 LIEU : Salle Lab Linux</span><span>⏰ 18:30 - 21:30</span></div>
-              <div class="flex justify-between"><span>🎟️ TARIF : Ouvert à tous</span><span class="text-bde-yellow font-bold">PLACES : 40 / 45</span></div>
-            </div>
-          </div>
-          <button class="btn-neo w-full bg-bde-cream text-black font-space font-black text-sm uppercase py-3 border-2 border-black shadow-neo-purple text-center">
-            RÉSERVER MA PLACE →
-          </button>
-        </div>
       </div>
     </div>
   </section>
 
   <!-- ================= SECTION 3: L'ÉQUIPE (Fond CRÈME) ================= -->
   <section id="equipe" class="w-full bg-gradient-to-b from-[#100028] to-[#0b1d6b] py-20 relative overflow-hidden">
-    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:30px;right:33.2%;width:20px;opacity:0.78">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:30px;right:20.3%;width:14px;opacity:0.78">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:13px;right:30.9%;width:20px;opacity:0.85">
-    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:42px;right:24.1%;width:14px;opacity:0.74">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:8px;right:18.1%;width:14px;opacity:0.87">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:7px;right:21.4%;width:12px;opacity:0.87">
-    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:40px;right:37.4%;width:20px;opacity:0.75">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:88px;right:28.6%;width:14px;opacity:0.56">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:86px;right:2.5%;width:12px;opacity:0.57">
-    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:50px;right:3.3%;width:14px;opacity:0.71">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:85px;right:3.1%;width:20px;opacity:0.57">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="bottom:112px;right:17.9%;width:8px;opacity:0.47">
-    <img src="assets/star8_y.png" alt="" class="deco" style="bottom:125px;right:10.4%;width:10px;opacity:0.42">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="bottom:215px;right:2.2%;width:8px;opacity:0.25">
-    <img src="assets/sunset_y.png" alt="" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:30px;right:33.2%;width:20px;opacity:0.78">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:30px;right:20.3%;width:14px;opacity:0.78">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:13px;right:30.9%;width:20px;opacity:0.85">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:42px;right:24.1%;width:14px;opacity:0.74">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:8px;right:18.1%;width:14px;opacity:0.87">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:7px;right:21.4%;width:12px;opacity:0.87">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:40px;right:37.4%;width:20px;opacity:0.75">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:88px;right:28.6%;width:14px;opacity:0.56">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:86px;right:2.5%;width:12px;opacity:0.57">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:50px;right:3.3%;width:14px;opacity:0.71">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:85px;right:3.1%;width:20px;opacity:0.57">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:112px;right:17.9%;width:8px;opacity:0.47">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:125px;right:10.4%;width:10px;opacity:0.42">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="bottom:215px;right:2.2%;width:8px;opacity:0.25">
+    <img src="assets/sunset_y.png" alt="" loading="lazy" decoding="async" class="deco hidden md:block w-28 top-6 -right-6 opacity-20">
         <div class="relative z-10 max-w-7xl mx-auto px-4">
       
       <div class="mb-14 text-bde-cream">
           <div class="flex items-center gap-2 font-mono text-bde-yellow uppercase text-xs tracking-widest mb-2 font-bold">
             <span>// CREW_MANIFEST</span>
-            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+            <img src="assets/chevrons_y.png" alt="" loading="lazy" decoding="async" class="h-3 w-auto">
           </div>
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
-            LE BUREAU <span class="whitespace-nowrap">ROOT_OVERFLOW<img src="assets/saturn_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
+            LE BUREAU <span class="whitespace-nowrap">ROOT_OVERFLOW<img src="assets/saturn_y.png" alt="" loading="lazy" decoding="async" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
           </h2>
           <div class="flex flex-col items-start md:items-end gap-3">
             <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
@@ -682,109 +585,37 @@
       </div>
 
       <div id="crew-grid" class="crew-slider flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pt-2 pb-5 px-1 -mx-1">
-        
-        <div class="card-neo bg-bde-purple border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-bde-cream">
-          <div>
-            <div class="flex justify-between items-center mb-4">
-              <span class="bg-bde-yellow text-black font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">PRÉSIDENTE // LVL.99</span>
-            </div>
-            <div class="h-44 bg-black border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
-              <svg class="w-24 h-24 text-bde-yellow group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
-                <rect x="25" y="20" width="50" height="40" rx="4" /><rect x="35" y="65" width="30" height="25" /><rect x="15" y="30" width="8" height="20" /><rect x="77" y="30" width="8" height="20" /><circle cx="40" cy="38" r="5" fill="#e1b70a" /><circle cx="60" cy="38" r="5" fill="#e1b70a" /><rect x="38" y="48" width="24" height="4" fill="#e1b70a" />
-              </svg>
-            </div>
-            <h3 class="font-syne font-black text-xl uppercase mb-1">SARAH "KERNEL" M.</h3>
-            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"Si c'est pas scriptable, ça existe pas."</p>
-            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
-              <div class="flex justify-between"><span>STACK:</span> <span>Go, Kubernetes, Arch</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-neo bg-bde-red border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-bde-cream">
-          <div>
-            <div class="flex justify-between items-center mb-4">
-              <span class="bg-black text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">TRÉSORIER // LVL.84</span>
-            </div>
-            <div class="h-44 bg-black border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
-              <svg class="w-24 h-24 text-bde-yellow group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
-                <polygon points="50,15 80,45 80,85 20,85 20,45" /><circle cx="50" cy="50" r="12" fill="#e1b70a" /><line x1="30" y1="35" x2="70" y2="35" stroke="#e1b70a" stroke-width="4" />
-              </svg>
-            </div>
-            <h3 class="font-syne font-black text-xl uppercase mb-1">ALEXANDRE D.</h3>
-            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"Chaque centime va dans les bières."</p>
-            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
-              <div class="flex justify-between"><span>STACK:</span> <span>Excel, Rust, Solidity</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-neo bg-bde-yellow border-[3px] border-black p-5 shadow-neo-black flex flex-col justify-between text-black">
-          <div>
-            <div class="flex justify-between items-center mb-4">
-              <span class="bg-bde-purple text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">RESP. SOIRÉES // LVL.92</span>
-            </div>
-            <div class="h-44 bg-bde-cream border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
-              <svg class="w-24 h-24 text-bde-purple group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
-                <circle cx="50" cy="40" r="22" /><path d="M20 90 C20 65 35 60 50 60 C65 60 80 65 80 90 Z" /><rect x="35" y="32" width="30" height="8" fill="#2e006c" />
-              </svg>
-            </div>
-            <h3 class="font-syne font-black text-xl uppercase mb-1">INÈS "BEAT" B.</h3>
-            <p class="font-mono text-xs text-bde-purple mb-3 font-bold">"Pas de sommeil avant d'avoir pushé la track."</p>
-            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-black/20 pt-3">
-              <div class="flex justify-between"><span>STACK:</span> <span>Ableton, React, TS</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card-neo bg-black border-[3px] border-black p-5 shadow-neo-purple flex flex-col justify-between text-bde-cream">
-          <div>
-            <div class="flex justify-between items-center mb-4">
-              <span class="bg-bde-red text-bde-cream font-mono font-black text-[11px] px-2 py-0.5 border border-black uppercase">LEAD TECH // LVL.95</span>
-            </div>
-            <div class="h-44 bg-bde-yellow border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group">
-              <svg class="w-24 h-24 text-black group-hover:scale-105 transition-transform" viewBox="0 0 100 100" fill="currentColor">
-                <polygon points="50,10 90,30 90,75 50,95 10,75 10,30" /><circle cx="50" cy="50" r="18" fill="#e1b70a" /><polygon points="50,40 60,55 40,55" fill="#000" />
-              </svg>
-            </div>
-            <h3 class="font-syne font-black text-xl uppercase mb-1">HUGO "DEBUG" V.</h3>
-            <p class="font-mono text-xs text-bde-yellow mb-3 font-bold">"404 : Le mot 'impossible' n'a pas été trouvé."</p>
-            <div class="space-y-1.5 font-mono text-[11px] font-bold border-t border-bde-cream/30 pt-3">
-              <div class="flex justify-between"><span>STACK:</span> <span>C++, Kernel, Neovim</span></div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
 
   <!-- ================= SECTION 4: BOÎTE À IDÉES (Fond VIOLET) ================= -->
   <section id="feedback" class="w-full bg-gradient-to-b from-[#0b1d6b] to-[#150033] py-20 border-b-[4px] border-black relative overflow-hidden">
-    <img src="assets/star8_y.png" alt="" class="deco" style="top:31px;right:25.6%;width:20px;opacity:0.78">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="top:37px;right:37.8%;width:12px;opacity:0.76">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:18px;right:13.3%;width:14px;opacity:0.83">
-    <img src="assets/star8_y.png" alt="" class="deco" style="top:34px;right:12.4%;width:12px;opacity:0.77">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="top:38px;right:29.6%;width:20px;opacity:0.75">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:8px;right:32.5%;width:20px;opacity:0.87">
-    <img src="assets/star8_y.png" alt="" class="deco" style="top:6px;right:36.5%;width:12px;opacity:0.88">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="top:60px;right:9.5%;width:12px;opacity:0.67">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:77px;right:15.5%;width:20px;opacity:0.6">
-    <img src="assets/star8_y.png" alt="" class="deco" style="top:73px;right:4.6%;width:14px;opacity:0.62">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="top:90px;right:11.7%;width:12px;opacity:0.55">
-    <img src="assets/sparkles_y.png" alt="" class="deco" style="top:111px;right:14.0%;width:10px;opacity:0.47">
-    <img src="assets/star8_y.png" alt="" class="deco" style="top:140px;right:35.2%;width:8px;opacity:0.36">
-    <img src="assets/diamond_y.png" alt="" class="deco" style="top:183px;right:27.5%;width:8px;opacity:0.25">
-    <img src="assets/diamond_c.png" alt="" class="deco hidden lg:block w-28 top-8 -left-4 opacity-20">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:31px;right:25.6%;width:20px;opacity:0.78">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:37px;right:37.8%;width:12px;opacity:0.76">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:18px;right:13.3%;width:14px;opacity:0.83">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:34px;right:12.4%;width:12px;opacity:0.77">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:38px;right:29.6%;width:20px;opacity:0.75">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:8px;right:32.5%;width:20px;opacity:0.87">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:6px;right:36.5%;width:12px;opacity:0.88">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:60px;right:9.5%;width:12px;opacity:0.67">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:77px;right:15.5%;width:20px;opacity:0.6">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:73px;right:4.6%;width:14px;opacity:0.62">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:90px;right:11.7%;width:12px;opacity:0.55">
+    <img src="assets/sparkles_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:111px;right:14.0%;width:10px;opacity:0.47">
+    <img src="assets/star8_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:140px;right:35.2%;width:8px;opacity:0.36">
+    <img src="assets/diamond_y.png" alt="" loading="lazy" decoding="async" class="deco" style="top:183px;right:27.5%;width:8px;opacity:0.25">
+    <img src="assets/diamond_c.png" alt="" loading="lazy" decoding="async" class="deco hidden lg:block w-28 top-8 -left-4 opacity-20">
         <div class="relative z-10 max-w-7xl mx-auto px-4">
       
       <div class="mb-12 text-bde-cream">
           <div class="flex items-center gap-2 font-mono uppercase text-xs tracking-widest mb-2 font-bold text-bde-yellow">
             <span>// OPEN_GOVERNANCE</span>
-            <img src="assets/chevrons_y.png" alt="" class="h-3 w-auto">
+            <img src="assets/chevrons_y.png" alt="" loading="lazy" decoding="async" class="h-3 w-auto">
           </div>
         <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
           <h2 class="font-syne font-black text-3xl sm:text-5xl uppercase tracking-tight">
-            BOÎTE À IDÉES & <span class="whitespace-nowrap">PR<img src="assets/target_y.png" alt="" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
+            BOÎTE À IDÉES & <span class="whitespace-nowrap">PR<img src="assets/target_y.png" alt="" loading="lazy" decoding="async" class="inline-block h-[0.8em] w-auto ml-2 align-[-0.05em] select-none pointer-events-none"></span>
           </h2>
           <div class="flex flex-col items-start lg:items-end gap-3">
             <p class="font-space text-bde-cream/90 font-bold max-w-md text-base">
@@ -1137,81 +968,11 @@
     let currentUser = null;
     let activeCategoryFilter = 'all';
     let eventLogsData = [];
-    let ideasData = [
-      {
-        id: 'idea-1', title: 'Machine à café illimitée', category: 'CAMPUS',
-        description: 'Remplacer la machine par un broyeur professionnel en accès libre.',
-        votes: 142, voters: [], authorLogin: 'kernel', theme: 'cream'
-      },
-      {
-        id: 'idea-2', title: 'Cluster Kubernetes dédié', category: 'TECH',
-        description: 'Mettre à disposition un serveur bare-metal pour les APIs.',
-        votes: 98, voters: [], authorLogin: 'debug', theme: 'red'
-      },
-      {
-        id: 'idea-3', title: 'Silent Party au casque', category: 'SOIRÉE',
-        description: 'Organiser une soirée silencieuse avec 3 canaux audio à la bibliothèque.',
-        votes: 76, voters: [], authorLogin: 'beat', theme: 'black'
-      }
-    ];
+    let ideasData = [];
 
-    let eventsData = [
-      {
-        id: 'evt-1', day: '12', month: 'NOV', category: 'tech',
-        badge1: 'TECH / DEV', badge2: 'PLACES LIMITÉES',
-        title: 'HACKATHON : PROMPT ENGINE 48H',
-        description: "Développez des agents autonomes et des applications IA sans dormir. RedBull à volonté et jury d'experts.",
-        location: 'Grand Amphi Tech', time: '20:00 - DIM 20:00',
-        price: 'Gratuit', slots: '68 / 80', ctaText: 'RÉSERVER MA PLACE →', theme: 'yellow'
-      },
-      {
-        id: 'evt-2', day: '21', month: 'NOV', category: 'party',
-        badge1: 'SOIRÉE OFFICIELLE', badge2: 'SHOTS INCLUS',
-        title: 'SOIRÉE SUDO_NIGHT : WAREHOUSE',
-        description: "Privatisation d'un hangar de 1000m² avec soundsystem Funktion-One. Line-up de 5 DJs étudiants, lasers.",
-        location: 'Club Le RedRoom', time: '23:00 - 05:30',
-        price: '8€ / 14€ Ext', slots: '280 / 350', ctaText: 'PRENDRE MON BILLET →', theme: 'cream'
-      },
-      {
-        id: 'evt-3', day: '05', month: 'DÉC', category: 'gaming',
-        badge1: 'E-SPORT ARENA', badge2: '',
-        title: 'TOURNOI SMASH BROS ULTIMATE & CS2',
-        description: 'Tournoi officiel homologué. Écrans 240Hz, setup streaming avec casters live et cashprize de 800€.',
-        location: 'Salle Réseau S102', time: '14:00 - 22:00',
-        price: "2€ d'inscription", slots: '32 / 64', ctaText: 'INSCRIRE MON ÉQUIPE →', theme: 'purple'
-      },
-      {
-        id: 'evt-4', day: '14', month: 'DÉC', category: 'tech',
-        badge1: 'WORKSHOP', badge2: '',
-        title: 'WORKSHOP : RUST, KERNEL & EXPLOIT',
-        description: 'Atelier intensif animé par des alumni de chez Datadog et Ledger. Conception de drivers.',
-        location: 'Salle Lab Linux', time: '18:30 - 21:30',
-        price: 'Ouvert à tous', slots: '40 / 45', ctaText: 'RÉSERVER MA PLACE →', theme: 'black'
-      }
-    ];
+    let eventsData = [];
 
-    let crewData = [
-      {
-        id: 'crew-1', login: 'shapetit', name: 'SARAH "KERNEL" M.',
-        role: 'PRÉSIDENTE // LVL.99', quote: "Si c'est pas scriptable, ça existe pas.",
-        stack: 'Go, Kubernetes, Arch', avatarUrl: '', avatarType: 'bot', theme: 'purple'
-      },
-      {
-        id: 'crew-2', login: '', name: 'ALEXANDRE D.',
-        role: 'TRÉSORIER // LVL.84', quote: 'Chaque centime va dans les bières.',
-        stack: 'Excel, Rust, Solidity', avatarUrl: '', avatarType: 'vault', theme: 'red'
-      },
-      {
-        id: 'crew-3', login: '', name: 'INÈS "BEAT" B.',
-        role: 'RESP. SOIRÉES // LVL.92', quote: "Pas de sommeil avant d'avoir pushé la track.",
-        stack: 'Ableton, React, TS', avatarUrl: '', avatarType: 'dj', theme: 'yellow'
-      },
-      {
-        id: 'crew-4', login: '', name: 'HUGO "DEBUG" V.',
-        role: 'LEAD TECH // LVL.95', quote: "404 : Le mot 'impossible' n'a pas été trouvé.",
-        stack: 'C++, Kernel, Neovim', avatarUrl: '', avatarType: 'hex', theme: 'black'
-      }
-    ];
+    let crewData = [];
 
     function escapeHtml(str) {
       return String(str ?? '').replace(/[&<>"']/g, m => ({
@@ -1338,8 +1099,8 @@
               <div class="flex justify-between"><span>🎟️ TARIF : ${escapeHtml(evt.price)}</span><span class="${t.slotsColor}">PLACES : ${escapeHtml(evt.slots)}</span></div>
             </div>
           </div>
-          <button type="button" ${userClicked ? 'disabled' : `data-click-event="${escapeHtml(evt.id)}"`} class="w-full ${userClicked ? 'bg-black/80 text-bde-yellow cursor-not-allowed opacity-80' : `btn-neo ${t.btn}`} font-space font-black text-sm uppercase py-3 border-2 border-black text-center">
-            ${userClicked ? `✓ DÉJÀ INSCRIT (@${escapeHtml(currentUser.login)})` : escapeHtml(evt.ctaText || 'RÉSERVER MA PLACE →')}
+          <button type="button" data-click-event="${escapeHtml(evt.id)}" title="${userClicked ? 'Cliquer pour annuler mon inscription' : ''}" class="w-full ${userClicked ? 'btn-neo bg-black/80 text-bde-yellow' : `btn-neo ${t.btn}`} font-space font-black text-sm uppercase py-3 border-2 border-black text-center">
+            ${userClicked ? `✓ INSCRIT (@${escapeHtml(currentUser.login)}) — CLIQUER POUR ANNULER` : escapeHtml(evt.ctaText || 'RÉSERVER MA PLACE →')}
           </button>
         </div>
       `;
@@ -1348,7 +1109,9 @@
     function renderEvents() {
       const grid = document.getElementById('events-grid');
       if (!grid) return;
-      grid.innerHTML = eventsData.map(renderEventCardHtml).join('');
+      grid.innerHTML = eventsData.length
+        ? eventsData.map(renderEventCardHtml).join('')
+        : '<div class="col-span-full p-6 border-2 border-black bg-black/40 text-bde-cream font-mono text-xs text-center">Aucun événement pour le moment.</div>';
       updateFilterCounts();
     }
 
@@ -1510,7 +1273,7 @@
       const t = themes[idea.theme] || themes.cream;
       return `
         <div class="card-neo ${t.card} border-2 border-black p-5 flex items-start gap-4">
-          <button type="button" ${hasVoted ? 'disabled' : `data-vote-idea="${escapeHtml(idea.id)}"`} class="${hasVoted ? 'opacity-80 cursor-not-allowed' : 'btn-neo'} flex flex-col items-center justify-center ${t.voteBtn} border-2 border-black p-3 min-w-[62px]">
+          <button type="button" data-vote-idea="${escapeHtml(idea.id)}" title="${hasVoted ? 'Retirer mon vote' : 'Voter'}" class="btn-neo flex flex-col items-center justify-center ${t.voteBtn} border-2 border-black p-3 min-w-[62px]">
             <span class="text-base font-black">${hasVoted ? '✓' : '▲'}</span>
             <span class="font-mono font-bold text-sm">${escapeHtml(idea.votes ?? 0)}</span>
           </button>
@@ -1682,7 +1445,7 @@
           if (Array.isArray(store.ideas)) ideasData = store.ideas;
         }
       } catch (_) {
-        // Offline / static file fallback uses default eventsData & crewData
+        // Server unreachable: sections stay empty
       }
 
       // Verify current session token if present
@@ -2006,7 +1769,9 @@
         if (Array.isArray(data.events)) eventsData = data.events;
         if (Array.isArray(data.eventLogs)) eventLogsData = data.eventLogs;
         renderEvents();
-        showToast(`✓ Inscription enregistrée (@${currentUser.login}) pour "${data.event.title}" !`);
+        showToast(data.registered === false
+          ? `Inscription annulée pour "${data.event.title}".`
+          : `✓ Inscription enregistrée (@${currentUser.login}) pour "${data.event.title}" !`);
       } catch (err) {
         showToast(err.message, true);
       }
@@ -2206,7 +1971,7 @@
           if (!res.ok) throw new Error(data.error || 'Impossible de voter');
           if (Array.isArray(data.ideas)) ideasData = data.ideas;
           renderIdeas();
-          showToast('▲ Vote pris en compte !');
+          showToast(data.voted === false ? 'Vote retiré.' : '▲ Vote pris en compte !');
         } catch (err) {
           showToast(err.message, true);
         }
